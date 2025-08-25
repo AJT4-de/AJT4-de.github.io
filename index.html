@@ -1,5 +1,4 @@
-git branch -M main
-git push -u origin main<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -9,6 +8,9 @@ git push -u origin main<!DOCTYPE html>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Classier font: Plus Jakarta Sans (Google Fonts) -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Federant&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
   <style>
     :root{
@@ -18,7 +20,9 @@ git push -u origin main<!DOCTYPE html>
       --paper:#faf4d3;       /* parchment */
     }
     html, body { height:100%; }
-    body { font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--paper); color: var(--ink); overflow: hidden; }
+    body { font-family: "Josefin Sans", sans-serif; background: var(--paper); color: var(--ink); overflow: hidden; }
+    h1, h2, h3, h4, h5, h6, .font-federant { font-family: "Federant", system-ui; }
+    .font-montserrat { font-family: "Montserrat", sans-serif; }
 
     /* ---------- HORIZONTAL SCROLLER LAYOUT (no side glow) ---------- */
     .hscroll {
@@ -78,9 +82,27 @@ git push -u origin main<!DOCTYPE html>
     /* Cursor ring (pointer: fine only) */
     @media (pointer:fine){
       body{ cursor: none; }
-      #cursorRing{ position: fixed; left:0; top:0; width: 20px; height: 20px; border: 1px solid var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: transform; }
-      #cursorDot{ position: fixed; left:0; top:0; width: 4px; height: 4px; background: var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: transform; }
-      .cursor-grow:hover ~ #cursorRing, a:hover ~ #cursorRing, button:hover ~ #cursorRing { width: 28px; height: 28px; border-width: 1px; }
+      #cursorRing{ position: fixed; left:0; top:0; width: 30px; height: 30px; border: 2px solid var(--teal); border-radius: 999px; pointer-events: none; opacity: .9; z-index: 200; will-change: transform; transition: width .2s, height .2s, opacity .2s; }
+      #cursorDot{ position: fixed; left:0; top:0; width: 8px; height: 8px; background: var(--teal); border-radius: 999px; pointer-events: none; opacity: .9; z-index: 200; will-change: transform; transition: opacity .2s; }
+      
+      #cursorRing.cursor-light { border-color: var(--paper); }
+      #cursorDot.cursor-light { background-color: var(--paper); }
+
+      #magnifier {
+        position: fixed;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 3px solid var(--teal);
+        background-color: white;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        z-index: 210;
+        display: none;
+        will-change: transform, background-position;
+      }
+      body.magnify-active #magnifier { display: block; }
+      body.magnify-active #cursorRing, body.magnify-active #cursorDot { opacity: 0; }
     }
 
     /* Mobile menu */
@@ -103,6 +125,7 @@ git push -u origin main<!DOCTYPE html>
   <!-- Cursor ring elements (only visible on pointer:fine via CSS) -->
   <div id="cursorRing" aria-hidden="true"></div>
   <div id="cursorDot" aria-hidden="true"></div>
+  <div id="magnifier" aria-hidden="true"></div>
 
   <!-- SCROLL PROGRESS (top) -->
   <div id="progressBar" aria-hidden="true"></div>
@@ -165,7 +188,7 @@ git push -u origin main<!DOCTYPE html>
       <div class="max-w-3xl relative">
         <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J Thomas</h1>
         <p class="text-lg md:text-2xl opacity-90 reveal">System Administrator & Web Developer • AI Enthusiast</p>
-        <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
+        <p class="mt-5 opacity-95 leading-relaxed reveal font-montserrat">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
         <div class="mt-8 flex items-center justify-center gap-4 reveal">
           <a href="https://github.com/AJT4-de" target="_blank" class="btn teal" aria-label="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
@@ -188,15 +211,15 @@ git push -u origin main<!DOCTYPE html>
             </div>
           </div>
         </div>
-        <div class="mt-5 text-sm opacity-80 reveal">Based in Heidelberg, Germany • +49 176 7717 4231</div>
+        <div class="mt-5 text-sm opacity-80 reveal font-montserrat">Based in Heidelberg, Germany • +49 176 7717 4231</div>
       </div>
     </section>
 
     <!-- ABOUT -->
-    <section id="about" class="panel bg-[var(--paper)] text-[var(--ink)]">
+    <section id="about" class="panel bg-[var(--paper)] text-[var(--ink)]" data-theme="light">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">About Me</h2>
-        <div class="space-y-5 leading-relaxed text-[1.05rem]">
+        <div class="space-y-5 leading-relaxed text-[1.05rem] font-montserrat">
           <p class="reveal">I’m Aldrin — a tech enthusiast who loves using technology to solve real problems. I work at the intersection of <strong>system administration</strong> and <strong>full‑stack development</strong>, and I actively explore <strong>applied AI</strong> to bring practical value to products and teams.</p>
           <p class="reveal">I’ve helped organizations such as <strong>Divine Retreat Ashram</strong> modernize infrastructure and media operations; at <strong>Sony A/c Pvt. Ltd.</strong> I optimized processes and led teams; at <strong>Christ College of Science and Management</strong> I kept campus IT running smoothly; and at <strong>Hailstone Technology</strong> I built responsive PHP websites and full‑stack apps.</p>
           <p class="reveal">I’m currently pursuing a <strong>Master’s in Applied Computer Sciences</strong> at SRH Hochschule Heidelberg. I value reliability, security, and clear UX, and I enjoy collaborating with like‑minded people to ship measurable impact.</p>
@@ -211,10 +234,10 @@ git push -u origin main<!DOCTYPE html>
     </section>
 
     <!-- EXPERIENCE -->
-    <section id="experience" class="panel bg-[var(--teal)] text-[var(--paper)]">
+    <section id="experience" class="panel bg-[var(--teal)] text-[var(--paper)]" data-theme="dark">
       <div class="max-w-5xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Experience</h2>
-        <div class="space-y-8">
+        <div class="space-y-8 font-montserrat">
           <!-- Divine Retreat Ashram -->
           <article class="reveal">
             <h3 class="text-2xl font-semibold">System Administrator & Technician</h3>
@@ -266,14 +289,14 @@ git push -u origin main<!DOCTYPE html>
     </section>
 
     <!-- PROJECTS -->
-    <section id="projects" class="panel bg-[var(--paper)] text-[var(--ink)]">
+    <section id="projects" class="panel bg-[var(--paper)] text-[var(--ink)]" data-theme="light">
       <div class="max-w-6xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">My Projects</h2>
         <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
           <!-- Cards (based on CV list) -->
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Speech Emotion Detection using AI</h3>
-            <p class="mt-2 text-sm opacity-90">Models to classify human emotions from speech using ML/DL.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Models to classify human emotions from speech using ML/DL.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">ML/DL</span><span class="chip">Signal Processing</span>
             </div>
@@ -284,7 +307,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Energy Optimisation using AI</h3>
-            <p class="mt-2 text-sm opacity-90">AI‑driven strategies to reduce and balance home energy use.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">AI‑driven strategies to reduce and balance home energy use.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">AI</span>
             </div>
@@ -293,7 +316,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">YoloEats — AI Food Platform</h3>
-            <p class="mt-2 text-sm opacity-90">Dietary insights and allergy detection for safer choices.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Dietary insights and allergy detection for safer choices.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Cross‑platform</span><span class="chip">AI</span>
             </div>
@@ -302,7 +325,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">2D Adventure Game</h3>
-            <p class="mt-2 text-sm opacity-90">Created with the Godot Engine; optimized gameplay and visuals.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Created with the Godot Engine; optimized gameplay and visuals.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Godot</span><span class="chip">Game Dev</span>
             </div>
@@ -311,7 +334,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Chatter Haus — Performance Analysis</h3>
-            <p class="mt-2 text-sm opacity-90">Rust + Kubernetes chat app to compare GAE vs GKE under load; benchmarking with Artillery.io.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Rust + Kubernetes chat app to compare GAE vs GKE under load; benchmarking with Artillery.io.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Vite.js</span><span class="chip">GKE</span>
             </div>
@@ -320,7 +343,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">E‑commerce Platform</h3>
-            <p class="mt-2 text-sm opacity-90">Scalable store with Rust backend & Next.js frontend; focused on performance.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Scalable store with Rust backend & Next.js frontend; focused on performance.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Next.js</span>
             </div>
@@ -329,7 +352,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Polyglot — Language‑translation Chat</h3>
-            <p class="mt-2 text-sm opacity-90">Real‑time multilingual chat powered by an open‑source translation model.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Real‑time multilingual chat powered by an open‑source translation model.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">NLP</span>
             </div>
@@ -338,7 +361,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Login — Techfest Website</h3>
-            <p class="mt-2 text-sm opacity-90">Website for the college tech event; promotion, registration, FAQs.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">Website for the college tech event; promotion, registration, FAQs.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">HTML</span><span class="chip">JavaScript</span>
             </div>
@@ -347,7 +370,7 @@ git push -u origin main<!DOCTYPE html>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">MapGo — Delivery & Tracking</h3>
-            <p class="mt-2 text-sm opacity-90">End‑to‑end package tracking with open‑source maps and chat support.</p>
+            <p class="mt-2 text-sm opacity-90 font-montserrat">End‑to‑end package tracking with open‑source maps and chat support.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Web</span><span class="chip">Maps API</span>
             </div>
@@ -358,31 +381,31 @@ git push -u origin main<!DOCTYPE html>
     </section>
 
     <!-- SKILLS -->
-    <section id="skills" class="panel bg-[var(--ink)] text-[var(--paper)]">
+    <section id="skills" class="panel bg-[var(--ink)] text-[var(--paper)]" data-theme="dark">
       <div class="max-w-6xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Skills</h2>
         <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Programming Languages</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
               <span class="chip">Java</span><span class="chip">Rust</span><span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">C++</span><span class="chip">C</span><span class="chip">HTML</span><span class="chip">PHP</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Frameworks & Libraries</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
               <span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Django</span><span class="chip">Tailwind CSS</span><span class="chip">Godot</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Tools & Platforms</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
               <span class="chip">Docker</span><span class="chip">Kubernetes</span><span class="chip">Networking</span><span class="chip">Security</span><span class="chip">Troubleshooting</span><span class="chip">Performance Tuning</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Design</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
               <span class="chip">Photoshop</span><span class="chip">Illustrator</span>
             </div>
           </div></div>
@@ -391,10 +414,10 @@ git push -u origin main<!DOCTYPE html>
     </section>
 
     <!-- EDUCATION -->
-    <section id="education" class="panel bg-[var(--paper)] text-[var(--ink)]">
+    <section id="education" class="panel bg-[var(--paper)] text-[var(--ink)]" data-theme="light">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">Education</h2>
-        <div class="space-y-6">
+        <div class="space-y-6 font-montserrat">
           <div class="reveal">
             <div class="font-semibold">Masters in Applied Computer Sciences</div>
             <div class="opacity-80">SRH Hochschule Heidelberg • Oct 2024 – Present • Heidelberg, Germany</div>
@@ -427,15 +450,15 @@ git push -u origin main<!DOCTYPE html>
     </section>
 
     <!-- CONTACT -->
-    <section id="contact" class="panel bg-[var(--teal)] text-[var(--paper)]">
+    <section id="contact" class="panel bg-[var(--teal)] text-[var(--paper)]" data-theme="dark">
       <div class="max-w-3xl mx-auto text-center">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-4 reveal">Get In Touch</h2>
-        <p class="opacity-95 reveal">I’m open to new opportunities and collaborations. The fastest way to reach me is by email.</p>
+        <p class="opacity-95 reveal font-montserrat">I’m open to new opportunities and collaborations. The fastest way to reach me is by email.</p>
         <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 reveal">
           <a href="mailto:aldrinjt@outlook.com" class="btn teal">aldrinjt@outlook.com</a>
           <a href="mailto:aldrinjthomas4@gmail.com" class="btn">aldrinjthomas4@gmail.com</a>
         </div>
-        <div class="mt-4 text-sm opacity-85 reveal">Phone: +49 176 7717 4231 • Heidelberg, Germany</div>
+        <div class="mt-4 text-sm opacity-85 reveal font-montserrat">Phone: +49 176 7717 4231 • Heidelberg, Germany</div>
       </div>
     </section>
   </main>
@@ -650,37 +673,79 @@ git push -u origin main<!DOCTYPE html>
     (function(){
       const ring = document.getElementById('cursorRing');
       const dot  = document.getElementById('cursorDot');
-      if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) { ring.style.display='none'; dot.style.display='none'; return; }
+      const magnifier = document.getElementById('magnifier');
+      if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) {
+        ring.style.display='none';
+        dot.style.display='none';
+        magnifier.style.display='none';
+        return;
+      }
 
       let tx = window.innerWidth/2, ty = window.innerHeight/2; // target
       let x = tx, y = ty;                                      // current
       const followEase = 0.2;                                  // trailing factor
       const dotEase = 0.35;
+      let currentTheme = 'light';
 
       function animateCursor(){
         x += (tx - x) * followEase;
         y += (ty - y) * followEase;
-        ring.style.transform = `translate(${x}px, ${y}px)`;
+        ring.style.transform = `translate(calc(${x}px - 50%), calc(${y}px - 50%))`;
 
-        // dot slightly snappier
         const dx = dot._x ?? x, dy = dot._y ?? y;
         const nx = dx + (tx - dx) * dotEase;
         const ny = dy + (ty - dy) * dotEase;
         dot._x = nx; dot._y = ny;
-        dot.style.transform = `translate(${nx}px, ${ny}px)`;
+        dot.style.transform = `translate(calc(${nx}px - 50%), calc(${ny}px - 50%))`;
+
+        if (document.body.classList.contains('magnify-active')) {
+            magnifier.style.transform = `translate(calc(${x}px - 60px), calc(${y}px - 60px))`;
+            const bgX = -(window.scrollX + tx) * 2 + 60;
+            const bgY = -(window.scrollY + ty) * 2 + 60;
+            magnifier.style.backgroundPosition = `${bgX}px ${bgY}px`;
+        }
+
         requestAnimationFrame(animateCursor);
       }
-      window.addEventListener('mousemove', (e)=>{ tx = e.clientX; ty = e.clientY; }, { passive:true });
 
-      // Scale ring on interactive elements
-      function hoverOn(){ ring.style.width = '28px'; ring.style.height = '28px'; }
-      function hoverOff(){ ring.style.width = '20px'; ring.style.height = '20px'; }
-      document.querySelectorAll('a, button, [role="button"]').forEach(el=>{
-        el.addEventListener('mouseenter', hoverOn);
-        el.addEventListener('mouseleave', hoverOff);
+      function updateTheme(newTheme) {
+        if (currentTheme === newTheme) return;
+        currentTheme = newTheme;
+        if (newTheme === 'dark') {
+          ring.classList.add('cursor-light');
+          dot.classList.add('cursor-light');
+          magnifier.style.borderColor = 'var(--paper)';
+        } else {
+          ring.classList.remove('cursor-light');
+          dot.classList.remove('cursor-light');
+          magnifier.style.borderColor = 'var(--teal)';
+        }
+      }
+
+      window.addEventListener('mousemove', (e)=>{
+        tx = e.clientX;
+        ty = e.clientY;
+        const target = e.target.closest('[data-theme]');
+        const newTheme = target ? target.getAttribute('data-theme') : 'light';
+        updateTheme(newTheme);
+      }, { passive:true });
+
+      function setupMagnifier(el) {
+        el.addEventListener('mouseenter', () => {
+            document.body.classList.add('magnify-active');
+            const pageSize = document.body.getBoundingClientRect();
+            magnifier.style.backgroundImage = `url('${document.location.href}')`;
+            magnifier.style.backgroundSize = `${pageSize.width * 2}px ${pageSize.height * 2}px`;
+        });
+        el.addEventListener('mouseleave', () => {
+            document.body.classList.remove('magnify-active');
+        });
+      }
+
+      document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+        setupMagnifier(el);
       });
 
-      // Hide ring when leaving window
       document.addEventListener('mouseleave', ()=>{ ring.style.opacity = '0'; dot.style.opacity = '0'; });
       document.addEventListener('mouseenter', ()=>{ ring.style.opacity = '.9'; dot.style.opacity = '.9'; });
 
