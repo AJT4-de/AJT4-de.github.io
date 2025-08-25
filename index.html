@@ -1,0 +1,691 @@
+git branch -M main
+git push -u origin main<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aldrin J Thomas • Portfolio</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Classier font: Plus Jakarta Sans (Google Fonts) -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      /* Palette from coolors: https://coolors.co/palette/0c1618-004643-faf4d3 */
+      --ink:#0c1618;         /* very dark blue-green */
+      --teal:#004643;        /* deep teal (accent) */
+      --paper:#faf4d3;       /* parchment */
+    }
+    html, body { height:100%; }
+    body { font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--paper); color: var(--ink); overflow: hidden; }
+
+    /* ---------- HORIZONTAL SCROLLER LAYOUT (no side glow) ---------- */
+    .hscroll {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;              /* native horizontal */
+      overflow-y: hidden;
+      height: 100vh;                 /* full viewport height */
+      scroll-snap-type: x mandatory; /* firm snapping for stability */
+      scroll-behavior: smooth;       /* smooth programmatic */
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;           /* keep horizontal gestures smooth on container */
+      overscroll-behavior-x: contain;
+    }
+    .panel {                         /* each full-width panel */
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      overflow-y: auto;              /* vertical scroll INSIDE panels when needed */
+      padding: 6rem 1.25rem 5.5rem;  /* account for fixed header + fixed footer */
+      position: relative;
+      transition: opacity .5s ease, transform .5s ease, filter .5s ease;
+      opacity: .75;
+      transform: scale(.985);
+      filter: saturate(.95);
+      will-change: transform, opacity, filter;
+    }
+    .panel.is-active {
+      opacity: 1;
+      transform: scale(1);
+      filter: none;
+    }
+
+    /* ---------- PROGRESS BAR (top) ---------- */
+    #progressBar { position: fixed; left: 0; top: 0; height: 6px; width: 0%; background: var(--teal); z-index: 100; }
+
+    /* ---------- NAV ---------- */
+    .glass { backdrop-filter: saturate(110%) blur(8px); background: rgba(250,244,211,.82); }
+    .nav-link { position: relative; }
+    .nav-link::after{ content: ""; position:absolute; left:0; right:0; bottom:-6px; height:2px; background: var(--teal); transform:scaleX(0); transform-origin:left; transition: transform .25s ease; }
+    .nav-link:hover::after, .nav-link[aria-current="true"]::after{ transform:scaleX(1); }
+
+    /* ---------- SMALL UTIL ---------- */
+    .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem .9rem; border-radius:.75rem; border:1px solid rgba(12,22,24,.15); transition:transform .15s ease, box-shadow .2s ease, background .2s ease; }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+    .btn.teal{ background: var(--teal); color: var(--paper); border-color: transparent; }
+    .chip{ display:inline-flex; align-items:center; gap:.375rem; padding:.35rem .6rem; border-radius:999px; border:1px dashed rgba(12,22,24,.25); font-size:.85rem; }
+
+    /* Reveal-on-scroll */
+    .reveal{ opacity: 0; transform: translateY(8px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.show{ opacity: 1; transform: none; }
+
+    /* 3D Tilt cards (subtle) */
+    .tilt{ perspective: 900px; }
+    .tilt-inner{ transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .08s ease; transform-style: preserve-3d; }
+
+    /* Cursor ring (pointer: fine only) */
+    @media (pointer:fine){
+      body{ cursor: none; }
+      #cursorRing{ position: fixed; left:0; top:0; width: 20px; height: 20px; border: 1px solid var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: transform; }
+      #cursorDot{ position: fixed; left:0; top:0; width: 4px; height: 4px; background: var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: transform; }
+      .cursor-grow:hover ~ #cursorRing, a:hover ~ #cursorRing, button:hover ~ #cursorRing { width: 28px; height: 28px; border-width: 1px; }
+    }
+
+    /* Mobile menu */
+    #mobileMenu{ display:none; }
+    @media (max-width: 1023px){
+      #mobileMenu[data-open="true"]{ display:block; }
+    }
+
+    /* Fixed footer so the page never becomes vertically scrollable */
+    footer{ position: fixed; bottom: 0; left: 0; right: 0; }
+
+    /* Reduced-motion */
+    @media (prefers-reduced-motion: reduce){
+      .panel{ transition: none !important; }
+      .reveal{ transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cursor ring elements (only visible on pointer:fine via CSS) -->
+  <div id="cursorRing" aria-hidden="true"></div>
+  <div id="cursorDot" aria-hidden="true"></div>
+
+  <!-- SCROLL PROGRESS (top) -->
+  <div id="progressBar" aria-hidden="true"></div>
+
+  <!-- Sticky Header / Nav -->
+  <header class="fixed top-0 inset-x-0 z-50 glass border-b border-[rgba(0,70,67,.15)]">
+    <div class="max-w-[1200px] mx-auto px-4">
+      <div class="h-16 flex items-center justify-between">
+        <a id="brandLink" href="#hero" class="font-extrabold tracking-tight text-lg md:text-xl flex items-center gap-2">
+          <span class="inline-block h-3 w-3 rounded-full" style="background:var(--teal)"></span>
+          Aldrin&nbsp;J&nbsp;Thomas
+        </a>
+        <nav class="hidden lg:flex items-center gap-6 text-[15px]">
+          <a data-target="about" class="nav-link cursor-pointer">About</a>
+          <a data-target="experience" class="nav-link cursor-pointer">Experience</a>
+          <a data-target="projects" class="nav-link cursor-pointer">Projects</a>
+          <a data-target="skills" class="nav-link cursor-pointer">Skills</a>
+          <a data-target="education" class="nav-link cursor-pointer">Education</a>
+          <a data-target="contact" class="nav-link cursor-pointer">Contact</a>
+        </nav>
+        <!-- Mobile hamburger -->
+        <button id="hamburger" class="lg:hidden btn" aria-label="Open menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="pb-3 border-t border-[rgba(0,70,67,.1)]">
+        <div class="py-2 flex flex-col gap-2">
+          <a data-target="about" class="px-1 py-2">About</a>
+          <a data-target="experience" class="px-1 py-2">Experience</a>
+          <a data-target="projects" class="px-1 py-2">Projects</a>
+          <a data-target="skills" class="px-1 py-2">Skills</a>
+          <a data-target="education" class="px-1 py-2">Education</a>
+          <a data-target="contact" class="px-1 py-2">Contact</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Floating Prev/Next Arrows (auto-hide at ends) -->
+  <div class="hidden md:flex fixed inset-y-0 left-3 right-3 z-40 items-center justify-between pointer-events-none">
+    <button id="prevBtn" class="pointer-events-auto btn" data-prev title="Previous section" aria-label="Previous section">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button id="nextBtn" class="pointer-events-auto btn" data-next title="Next section" aria-label="Next section">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <!-- MAIN HORIZONTAL SCROLLER -->
+  <main class="hscroll" id="hscroll">
+
+    <!-- HERO -->
+    <section id="hero" class="panel is-active bg-[var(--ink)] text-[var(--paper)] flex items-center justify-center text-center relative overflow-hidden">
+      <!-- subtle orbits as live/3D-ish element -->
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vmin] h-[40vmin] rounded-full border border-white/10 animate-[spin_22s_linear_infinite]"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55vmin] h-[55vmin] rounded-full border border-white/10 animate-[spin_40s_linear_infinite]" style="animation-direction: reverse;"></div>
+      </div>
+      <div class="max-w-3xl relative">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J Thomas</h1>
+        <p class="text-lg md:text-2xl opacity-90 reveal">System Administrator & Web Developer • AI Enthusiast</p>
+        <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
+        <div class="mt-8 flex items-center justify-center gap-4 reveal">
+          <a href="https://github.com/AJT4-de" target="_blank" class="btn teal" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
+            GitHub
+          </a>
+          <!-- Email split button -->
+          <div class="relative inline-flex">
+            <a id="emailPrimary" href="mailto:aldrinjt@outlook.com" class="btn teal" title="Email (primary)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
+              Email
+            </a>
+            <button id="emailToggle" class="btn" aria-haspopup="menu" aria-expanded="false" title="Choose email" style="border-left:0; border-top-left-radius:0; border-bottom-left-radius:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="emailMenu" class="absolute right-0 top-full mt-2 hidden w-72 rounded-xl border bg-white shadow-xl z-10">
+              <button data-mail="mailto:aldrinjt@outlook.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Send via Outlook — <span class="font-medium">aldrinjt@outlook.com</span></button>
+              <button data-mail="mailto:aldrinjthomas4@gmail.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Send via Gmail — <span class="font-medium">aldrinjthomas4@gmail.com</span></button>
+              <div class="border-t"></div>
+              <button id="copyEmails" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Copy both emails</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 text-sm opacity-80 reveal">Based in Heidelberg, Germany • +49 176 7717 4231</div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="panel bg-[var(--paper)] text-[var(--ink)]">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">About Me</h2>
+        <div class="space-y-5 leading-relaxed text-[1.05rem]">
+          <p class="reveal">I’m Aldrin — a tech enthusiast who loves using technology to solve real problems. I work at the intersection of <strong>system administration</strong> and <strong>full‑stack development</strong>, and I actively explore <strong>applied AI</strong> to bring practical value to products and teams.</p>
+          <p class="reveal">I’ve helped organizations such as <strong>Divine Retreat Ashram</strong> modernize infrastructure and media operations; at <strong>Sony A/c Pvt. Ltd.</strong> I optimized processes and led teams; at <strong>Christ College of Science and Management</strong> I kept campus IT running smoothly; and at <strong>Hailstone Technology</strong> I built responsive PHP websites and full‑stack apps.</p>
+          <p class="reveal">I’m currently pursuing a <strong>Master’s in Applied Computer Sciences</strong> at SRH Hochschule Heidelberg. I value reliability, security, and clear UX, and I enjoy collaborating with like‑minded people to ship measurable impact.</p>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-3 reveal">
+          <span class="chip">Heidelberg, DE</span>
+          <span class="chip">English (native)</span>
+          <span class="chip">German</span>
+          <span class="chip">Hindi</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" class="panel bg-[var(--teal)] text-[var(--paper)]">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Experience</h2>
+        <div class="space-y-8">
+          <!-- Divine Retreat Ashram -->
+          <article class="reveal">
+            <h3 class="text-2xl font-semibold">System Administrator & Technician</h3>
+            <div class="opacity-90">Divine Retreat Ashram — Faridabad, India • Jul 2023 – Sep 2024</div>
+            <ul class="mt-3 list-disc list-inside space-y-1.5">
+              <li>Revitalized and managed the media wing, streamlining operations and enhancing content delivery.</li>
+              <li>Upgraded network infrastructure, improving connectivity, speed, and reliability.</li>
+              <li>Developed and maintained the organization’s website and server with a focus on uptime, security, and performance.</li>
+              <li>Implemented new tooling to reduce operational delays and maximize workflow efficiency.</li>
+            </ul>
+          </article>
+
+          <!-- Sony A/c Pvt. Ltd. -->
+          <article class="reveal">
+            <h3 class="text-2xl font-semibold">Manager</h3>
+            <div class="opacity-90">Sony A/c Pvt. Ltd. — New Delhi, India • Aug 2023 – Sep 2024</div>
+            <ul class="mt-3 list-disc list-inside space-y-1.5">
+              <li>Designed and implemented optimized operational systems, cutting process delays and improving workflows.</li>
+              <li>Built durable client relationships to drive retention and sales.</li>
+              <li>Led teams to maintain quality benchmarks and hit performance targets.</li>
+              <li>Streamlined financial processes for accuracy and transparency.</li>
+            </ul>
+          </article>
+
+          <!-- Christ College -->
+          <article class="reveal">
+            <h3 class="text-2xl font-semibold">System Administrator</h3>
+            <div class="opacity-90">Christ College of Science and Management — Bengaluru, India • 2022 – 2023</div>
+            <ul class="mt-3 list-disc list-inside space-y-1.5">
+              <li>Provided reliable maintenance and troubleshooting for hardware, software, and peripherals.</li>
+              <li>Installed and upgraded operating systems and enterprise apps to boost productivity.</li>
+              <li>Monitored and optimized network performance for consistent service availability.</li>
+              <li>Hardened security via account, permission, and access‑control best practices.</li>
+            </ul>
+          </article>
+
+          <!-- Hailstone Technology -->
+          <article class="reveal">
+            <h3 class="text-2xl font-semibold">Intern</h3>
+            <div class="opacity-90">Hailstone Technology — Coimbatore, India • Apr 2022 – May 2022</div>
+            <ul class="mt-3 list-disc list-inside space-y-1.5">
+              <li>Built dynamic, responsive PHP websites and improved UX.</li>
+              <li>Designed and implemented full‑stack apps integrating front‑end interfaces with robust back‑end systems.</li>
+              <li>Maintained server environments for performance, security, and uptime.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="panel bg-[var(--paper)] text-[var(--ink)]">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">My Projects</h2>
+        <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Cards (based on CV list) -->
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">Speech Emotion Detection using AI</h3>
+            <p class="mt-2 text-sm opacity-90">Models to classify human emotions from speech using ML/DL.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Python</span><span class="chip">ML/DL</span><span class="chip">Signal Processing</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm">
+              <a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a>
+            </div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">Energy Optimisation using AI</h3>
+            <p class="mt-2 text-sm opacity-90">AI‑driven strategies to reduce and balance home energy use.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Python</span><span class="chip">AI</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">YoloEats — AI Food Platform</h3>
+            <p class="mt-2 text-sm opacity-90">Dietary insights and allergy detection for safer choices.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Cross‑platform</span><span class="chip">AI</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">2D Adventure Game</h3>
+            <p class="mt-2 text-sm opacity-90">Created with the Godot Engine; optimized gameplay and visuals.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Godot</span><span class="chip">Game Dev</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">Chatter Haus — Performance Analysis</h3>
+            <p class="mt-2 text-sm opacity-90">Rust + Kubernetes chat app to compare GAE vs GKE under load; benchmarking with Artillery.io.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Rust</span><span class="chip">Vite.js</span><span class="chip">GKE</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">E‑commerce Platform</h3>
+            <p class="mt-2 text-sm opacity-90">Scalable store with Rust backend & Next.js frontend; focused on performance.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Rust</span><span class="chip">Next.js</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">Polyglot — Language‑translation Chat</h3>
+            <p class="mt-2 text-sm opacity-90">Real‑time multilingual chat powered by an open‑source translation model.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Python</span><span class="chip">NLP</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">Login — Techfest Website</h3>
+            <p class="mt-2 text-sm opacity-90">Website for the college tech event; promotion, registration, FAQs.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">HTML</span><span class="chip">JavaScript</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+
+          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <h3 class="font-semibold text-lg">MapGo — Delivery & Tracking</h3>
+            <p class="mt-2 text-sm opacity-90">End‑to‑end package tracking with open‑source maps and chat support.</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="chip">Web</span><span class="chip">Maps API</span>
+            </div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="panel bg-[var(--ink)] text-[var(--paper)]">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Skills</h2>
+        <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
+            <h3 class="font-semibold">Programming Languages</h3>
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+              <span class="chip">Java</span><span class="chip">Rust</span><span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">C++</span><span class="chip">C</span><span class="chip">HTML</span><span class="chip">PHP</span>
+            </div>
+          </div></div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
+            <h3 class="font-semibold">Frameworks & Libraries</h3>
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+              <span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Django</span><span class="chip">Tailwind CSS</span><span class="chip">Godot</span>
+            </div>
+          </div></div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
+            <h3 class="font-semibold">Tools & Platforms</h3>
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+              <span class="chip">Docker</span><span class="chip">Kubernetes</span><span class="chip">Networking</span><span class="chip">Security</span><span class="chip">Troubleshooting</span><span class="chip">Performance Tuning</span>
+            </div>
+          </div></div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
+            <h3 class="font-semibold">Design</h3>
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+              <span class="chip">Photoshop</span><span class="chip">Illustrator</span>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section id="education" class="panel bg-[var(--paper)] text-[var(--ink)]">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">Education</h2>
+        <div class="space-y-6">
+          <div class="reveal">
+            <div class="font-semibold">Masters in Applied Computer Sciences</div>
+            <div class="opacity-80">SRH Hochschule Heidelberg • Oct 2024 – Present • Heidelberg, Germany</div>
+          </div>
+          <div class="reveal">
+            <div class="font-semibold">Bachelor’s in Computer Application</div>
+            <div class="opacity-80">Christ College of Science and Management • 2019 – 2022 • Malur, India</div>
+            <ul class="mt-2 list-disc list-inside text-[0.95rem] opacity-95 space-y-1">
+              <li>Organizer & Chief Student Coordinator for Login ’22 (inter‑collegiate tech fest).</li>
+              <li>Captained the college basketball team.</li>
+              <li>Co‑founded a college band “CADENCE” and served as an initial member.</li>
+              <li>Student representative for 3 consecutive years.</li>
+            </ul>
+          </div>
+          <div class="reveal">
+            <div class="font-semibold">XII (Higher Secondary)</div>
+            <div class="opacity-80">St. Columba’s School • 2019 • New Delhi, India</div>
+            <ul class="mt-2 list-disc list-inside text-[0.95rem] opacity-95 space-y-1">
+              <li>Member of the Just ED Society (Centre for Social Service).</li>
+              <li>Defender & Mid‑fielder in the school football team.</li>
+              <li>Received the Chatterjee Award for highest score in Informatics Practices.</li>
+            </ul>
+          </div>
+          <div class="reveal">
+            <div class="font-semibold">X (Secondary)</div>
+            <div class="opacity-80">St. Columba’s School • 2017 • New Delhi, India</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="panel bg-[var(--teal)] text-[var(--paper)]">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-4 reveal">Get In Touch</h2>
+        <p class="opacity-95 reveal">I’m open to new opportunities and collaborations. The fastest way to reach me is by email.</p>
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 reveal">
+          <a href="mailto:aldrinjt@outlook.com" class="btn teal">aldrinjt@outlook.com</a>
+          <a href="mailto:aldrinjthomas4@gmail.com" class="btn">aldrinjthomas4@gmail.com</a>
+        </div>
+        <div class="mt-4 text-sm opacity-85 reveal">Phone: +49 176 7717 4231 • Heidelberg, Germany</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER (fixed) -->
+  <footer class="relative z-40 border-t border-[rgba(0,70,67,.15)] text-center py-4 px-4 bg-white/70 backdrop-blur">
+    <div class="max-w-6xl mx-auto flex items-center justify-center gap-4 text-sm">
+      <span>© <span id="year"></span> Aldrin J Thomas</span>
+      <a href="https://github.com/AJT4-de" target="_blank" class="underline">GitHub</a>
+    </div>
+  </footer>
+
+  <!-- INTERACTION LOGIC -->
+  <script>
+    // Built with GPT-5 Thinking.
+
+    const scrollEl = document.getElementById('hscroll');
+    const progressBar = document.getElementById('progressBar');
+    const yearEl = document.getElementById('year');
+    const brandLink = document.getElementById('brandLink');
+    yearEl.textContent = new Date().getFullYear();
+
+    // ---------- LIGHTWEIGHT HORIZONTAL SMOOTHING (wheel → horizontal) ----------
+    let targetLeft = scrollEl.scrollLeft;  // desired x position
+    let currentLeft = scrollEl.scrollLeft; // animated x position
+    let rafId = null;
+    const ease = 0.22;                     // smoothing factor (snappier, less jitter)
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const maxScroll = () => scrollEl.scrollWidth - scrollEl.clientWidth;
+
+    function animate(){
+      const delta = (targetLeft - currentLeft) * ease;
+      if (Math.abs(delta) > 0.5) {
+        currentLeft += delta;
+        scrollEl.scrollLeft = currentLeft;
+        setProgress();
+        rafId = requestAnimationFrame(animate);
+      } else {
+        scrollEl.scrollLeft = targetLeft;
+        currentLeft = targetLeft;
+        setProgress();
+        rafId = null;
+      }
+    }
+    function requestTo(left){
+      targetLeft = clamp(left, 0, maxScroll());
+      if (!rafId) rafId = requestAnimationFrame(animate);
+    }
+
+    // Check if an inner element can scroll vertically in the event direction
+    function verticalScrollableAncestor(start, deltaY){
+      let el = start instanceof Element ? start : null;
+      while (el && el !== scrollEl && el !== document.body) {
+        const style = getComputedStyle(el);
+        const canScrollY = el.scrollHeight > el.clientHeight && (/(auto|scroll)/).test(style.overflowY);
+        if (canScrollY) {
+          const atTop = el.scrollTop <= 0;
+          const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+          if ((deltaY < 0 && !atTop) || (deltaY > 0 && !atBottom)) return el;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    // Wheel → horizontal; do not hijack if inner can scroll vertically
+    scrollEl.addEventListener('wheel', (e) => {
+      const { deltaX, deltaY } = e;
+      if (verticalScrollableAncestor(e.target, deltaY)) return; // allow native vertical scroll inside panels
+      const horiz = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+      e.preventDefault();
+      requestTo(scrollEl.scrollLeft + horiz);
+    }, { passive: false });
+
+    // Drag-to-scroll
+    let isDown = false, startX = 0, startLeft = 0, activePointer = null;
+    scrollEl.addEventListener('pointerdown', (e)=>{
+      isDown = true; activePointer = e.pointerId; startX = e.clientX; startLeft = scrollEl.scrollLeft; scrollEl.setPointerCapture(activePointer);
+    });
+    scrollEl.addEventListener('pointermove', (e)=>{ if(!isDown) return; const dx = e.clientX - startX; requestTo(startLeft - dx); });
+    const release = ()=>{ isDown = false; if(activePointer!=null){ try{ scrollEl.releasePointerCapture(activePointer);}catch(_){} activePointer=null; } };
+    scrollEl.addEventListener('pointerup', release);
+    scrollEl.addEventListener('pointercancel', release);
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e)=>{
+      if(['ArrowRight','PageDown'].includes(e.key)) { e.preventDefault(); goTo('next'); }
+      if(['ArrowLeft','PageUp'].includes(e.key))   { e.preventDefault(); goTo('prev'); }
+      if(e.key==='Home'){ e.preventDefault(); requestTo(0); }
+      if(e.key==='End'){ e.preventDefault(); requestTo(maxScroll()); }
+    });
+
+    // Progress bar
+    function setProgress(){
+      const max = maxScroll();
+      const pct = max > 0 ? (scrollEl.scrollLeft / max) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    }
+    scrollEl.addEventListener('scroll', setProgress, { passive: true });
+    window.addEventListener('resize', ()=>{ requestTo(scrollEl.scrollLeft); setProgress(); });
+    setProgress();
+
+    // Active panel + nav highlight + arrow hide at ends
+    const panels = [...document.querySelectorAll('.panel')];
+    const navLinks = [...document.querySelectorAll('nav a, #mobileMenu a')];
+    const idToLink = Object.fromEntries(navLinks.map(a => [a.getAttribute('data-target'), a]));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateArrows(idx){
+      if(!prevBtn || !nextBtn) return;
+      // hide left arrow on first, right on last
+      prevBtn.style.visibility = idx <= 0 ? 'hidden' : 'visible';
+      nextBtn.style.visibility = idx >= panels.length - 1 ? 'hidden' : 'visible';
+    }
+
+    function currentIndex(){
+      // pick the panel whose left is closest to scrollLeft
+      const x = scrollEl.scrollLeft; let best = 0; let bestDist = Infinity;
+      panels.forEach((p,i)=>{ const d = Math.abs(p.offsetLeft - x); if(d < bestDist){ best = i; bestDist = d; } });
+      return best;
+    }
+
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        const el = entry.target; const id = el.id;
+        if(entry.isIntersecting && entry.intersectionRatio >= 0.65){
+          panels.forEach(p=>p.classList.remove('is-active'));
+          el.classList.add('is-active');
+          // update nav highlight
+          Object.values(idToLink).forEach(a=>a.removeAttribute('aria-current'));
+          if(idToLink[id]) idToLink[id].setAttribute('aria-current','true');
+          updateArrows(panels.indexOf(el));
+        }
+      });
+    }, { root: scrollEl, threshold: [0.65] });
+    panels.forEach(p=>io.observe(p));
+    updateArrows(0); // init
+
+    // Nav clicks → horizontal snap to panel
+    function scrollToPanel(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      requestTo(el.offsetLeft);
+    }
+    navLinks.forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); const id = a.getAttribute('data-target'); scrollToPanel(id); closeMobile(); }));
+
+    // Brand link fix (no error; go to hero)
+    brandLink.addEventListener('click', (e)=>{ e.preventDefault(); scrollToPanel('hero'); });
+
+    // Prev/Next buttons
+    function goTo(dir){
+      let idx = currentIndex();
+      idx = dir==='next' ? Math.min(idx+1, panels.length-1) : Math.max(idx-1, 0);
+      requestTo(panels[idx].offsetLeft);
+    }
+    prevBtn?.addEventListener('click', ()=>goTo('prev'));
+    nextBtn?.addEventListener('click', ()=>goTo('next'));
+
+    // Mobile menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function closeMobile(){ mobileMenu.setAttribute('data-open','false'); mobileMenu.style.display = 'none'; }
+    function openMobile(){ mobileMenu.setAttribute('data-open','true'); mobileMenu.style.display = 'block'; }
+    hamburger.addEventListener('click', ()=>{ const open = mobileMenu.getAttribute('data-open') === 'true'; open ? closeMobile() : openMobile(); });
+
+    // Email split button behavior
+    const emailToggle = document.getElementById('emailToggle');
+    const emailMenu   = document.getElementById('emailMenu');
+    const emailPrimary= document.getElementById('emailPrimary');
+    emailToggle.addEventListener('click', ()=>{ emailMenu.classList.toggle('hidden'); emailToggle.setAttribute('aria-expanded', emailMenu.classList.contains('hidden') ? 'false' : 'true'); });
+    emailMenu.querySelectorAll('[data-mail]').forEach(btn=> btn.addEventListener('click', ()=>{
+      const mailto = btn.getAttribute('data-mail');
+      emailPrimary.href = mailto; emailMenu.classList.add('hidden');
+      window.location.href = mailto; // open immediately
+    }));
+    document.addEventListener('click', (e)=>{ if(!emailMenu.contains(e.target) && e.target !== emailToggle) emailMenu.classList.add('hidden'); });
+    document.getElementById('copyEmails').addEventListener('click', async ()=>{
+      try { await navigator.clipboard.writeText('aldrinjt@outlook.com; aldrinjthomas4@gmail.com'); alert('Emails copied to clipboard'); } catch(e){ alert('Copy failed — you can copy manually: aldrinjt@outlook.com, aldrinjthomas4@gmail.com'); }
+      emailMenu.classList.add('hidden');
+    });
+
+    // Reveal-on-scroll for elements marked .reveal (works for vertical scroll inside panels, too)
+    const revealObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('show'); revealObserver.unobserve(en.target); } });
+    }, { root: null, threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+    // 3D tilt for cards/boxes (minimal + subtle)
+    document.querySelectorAll('.tilt').forEach(wrapper =>{
+      const inner = wrapper.querySelector('.tilt-inner');
+      if(!inner) return;
+      const max = 6; // degrees
+      function onMove(e){
+        const rect = wrapper.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;   // 0..1
+        const py = (e.clientY - rect.top) / rect.height;   // 0..1
+        const ry = (px - 0.5) * 2 * max;  // -max..max
+        const rx = -(py - 0.5) * 2 * max;
+        inner.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+        inner.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+      }
+      function reset(){ inner.style.setProperty('--rx','0deg'); inner.style.setProperty('--ry','0deg'); }
+      wrapper.addEventListener('pointermove', onMove);
+      wrapper.addEventListener('pointerleave', reset);
+      wrapper.addEventListener('pointerdown', onMove);
+      wrapper.addEventListener('pointerup', reset);
+    });
+
+    // Custom cursor ring (thin ring + tiny dot, slight delay)
+    (function(){
+      const ring = document.getElementById('cursorRing');
+      const dot  = document.getElementById('cursorDot');
+      if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) { ring.style.display='none'; dot.style.display='none'; return; }
+
+      let tx = window.innerWidth/2, ty = window.innerHeight/2; // target
+      let x = tx, y = ty;                                      // current
+      const followEase = 0.2;                                  // trailing factor
+      const dotEase = 0.35;
+
+      function animateCursor(){
+        x += (tx - x) * followEase;
+        y += (ty - y) * followEase;
+        ring.style.transform = `translate(${x}px, ${y}px)`;
+
+        // dot slightly snappier
+        const dx = dot._x ?? x, dy = dot._y ?? y;
+        const nx = dx + (tx - dx) * dotEase;
+        const ny = dy + (ty - dy) * dotEase;
+        dot._x = nx; dot._y = ny;
+        dot.style.transform = `translate(${nx}px, ${ny}px)`;
+        requestAnimationFrame(animateCursor);
+      }
+      window.addEventListener('mousemove', (e)=>{ tx = e.clientX; ty = e.clientY; }, { passive:true });
+
+      // Scale ring on interactive elements
+      function hoverOn(){ ring.style.width = '28px'; ring.style.height = '28px'; }
+      function hoverOff(){ ring.style.width = '20px'; ring.style.height = '20px'; }
+      document.querySelectorAll('a, button, [role="button"]').forEach(el=>{
+        el.addEventListener('mouseenter', hoverOn);
+        el.addEventListener('mouseleave', hoverOff);
+      });
+
+      // Hide ring when leaving window
+      document.addEventListener('mouseleave', ()=>{ ring.style.opacity = '0'; dot.style.opacity = '0'; });
+      document.addEventListener('mouseenter', ()=>{ ring.style.opacity = '.9'; dot.style.opacity = '.9'; });
+
+      requestAnimationFrame(animateCursor);
+    })();
+  </script>
+</body>
+</html>
