@@ -6,11 +6,8 @@
   <title>Aldrin J Thomas • Portfolio</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Classier font: Plus Jakarta Sans (Google Fonts) -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Federant&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <!-- Fonts: Josefin Sans (regular), Federant (headings/highlights), Montserrat (UI/others) -->
+  <link href="https://fonts.googleapis.com/css2?family=Federant&family=Josefin+Sans:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root{
@@ -20,9 +17,12 @@
       --paper:#faf4d3;       /* parchment */
     }
     html, body { height:100%; }
-    body { font-family: "Josefin Sans", sans-serif; background: var(--paper); color: var(--ink); overflow: hidden; }
-    h1, h2, h3, h4, h5, h6, .font-federant { font-family: "Federant", system-ui; }
-    .font-montserrat { font-family: "Montserrat", sans-serif; }
+  body { font-family: "Josefin Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--paper); color: var(--ink); overflow: hidden; }
+
+  /* Headings and highlighted text use Federant */
+  h1, h2, h3, .nav-link, strong, .font-extrabold { font-family: "Federant", serif; }
+  /* UI elements (buttons, chips, small labels) use Montserrat */
+  .btn, .chip, .underline, .opacity-80, .opacity-85, .opacity-90, .opacity-95 { font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 
     /* ---------- HORIZONTAL SCROLLER LAYOUT (no side glow) ---------- */
     .hscroll {
@@ -66,10 +66,26 @@
     .nav-link:hover::after, .nav-link[aria-current="true"]::after{ transform:scaleX(1); }
 
     /* ---------- SMALL UTIL ---------- */
-    .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem .9rem; border-radius:.75rem; border:1px solid rgba(12,22,24,.15); transition:transform .15s ease, box-shadow .2s ease, background .2s ease; }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+  .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem .9rem; border-radius:.75rem; border:1px solid rgba(12,22,24,.15); transition:transform .15s ease, box-shadow .2s ease, background .2s ease; position: relative; overflow: hidden; }
+  .btn:hover{ box-shadow: 0 6px 18px rgba(0,0,0,.08); }
     .btn.teal{ background: var(--teal); color: var(--paper); border-color: transparent; }
     .chip{ display:inline-flex; align-items:center; gap:.375rem; padding:.35rem .6rem; border-radius:999px; border:1px dashed rgba(12,22,24,.25); font-size:.85rem; }
+
+  /* Lens effect for buttons (shown while hovering) */
+  .btn::before{ content:""; position:absolute; width: 180px; height: 180px; left: calc(var(--mx, -999px) - 90px); top: calc(var(--my, -999px) - 90px); border-radius: 999px; pointer-events:none; opacity:0; transition: opacity .15s ease; box-shadow: 0 6px 18px rgba(0,0,0,.15) inset, 0 2px 10px rgba(0,0,0,.08); background: radial-gradient( circle at 50% 50%, rgba(255,255,255,.35), rgba(255,255,255,.12) 60%, rgba(255,255,255,0) 75% ); mix-blend-mode: screen; }
+  .btn[data-lens="on"]{ transform: scale(1.06); }
+  .btn[data-lens="on"]::before{ opacity: 1; }
+
+  /* Button discoverability: subtle periodic shimmer and pulse when visible */
+  .btn::after{ content:""; position:absolute; inset:0; background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.25) 12%, transparent 24%); transform: translateX(-120%); opacity:.0; pointer-events:none; }
+  .btn[data-animate="on"]::after{ animation: shimmer 2.4s linear infinite; opacity:.35; }
+  .btn[data-animate="on"]{ animation: btnBeacon 6s ease-in-out infinite; }
+  @keyframes shimmer{ 0%{ transform: translateX(-120%);} 100%{ transform: translateX(120%);} }
+  @keyframes btnBeacon{ 0%,100%{ box-shadow: 0 0 0 0 rgba(0,0,0,.0);} 50%{ box-shadow: 0 0 0 8px rgba(0,0,0,.05);} }
+
+  /* Hover bounce for buttons (applied via JS outside contact) */
+  @keyframes btnHover{ 0%{ transform: scale(1); } 60%{ transform: scale(1.08);} 100%{ transform: scale(1.06);} }
+  .btn.btn-bounce{ animation: btnHover .28s ease-out; }
 
     /* Reveal-on-scroll */
     .reveal{ opacity: 0; transform: translateY(8px); transition: opacity .7s ease, transform .7s ease; }
@@ -82,28 +98,21 @@
     /* Cursor ring (pointer: fine only) */
     @media (pointer:fine){
       body{ cursor: none; }
-      #cursorRing{ position: fixed; left:0; top:0; width: 30px; height: 30px; border: 2px solid var(--teal); border-radius: 999px; pointer-events: none; opacity: .9; z-index: 200; will-change: transform; transition: width .2s, height .2s, opacity .2s; }
-      #cursorDot{ position: fixed; left:0; top:0; width: 8px; height: 8px; background: var(--teal); border-radius: 999px; pointer-events: none; opacity: .9; z-index: 200; will-change: transform; transition: opacity .2s; }
-      
-      #cursorRing.cursor-light { border-color: var(--paper); }
-      #cursorDot.cursor-light { background-color: var(--paper); }
-
-      #magnifier {
-        position: fixed;
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: 3px solid var(--teal);
-        background-color: white;
-        background-repeat: no-repeat;
-        pointer-events: none;
-        z-index: 210;
-        display: none;
-        will-change: transform, background-position;
-      }
-      body.magnify-active #magnifier { display: block; }
-      body.magnify-active #cursorRing, body.magnify-active #cursorDot { opacity: 0; }
+      #cursorRing{ position: fixed; left:0; top:0; width: 32px; height: 32px; border: 2px solid var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: left, top, width, height, border-color; transition: width .12s ease, height .12s ease, opacity .12s ease; }
+      #cursorDot{ position: fixed; left:0; top:0; width: 8px; height: 8px; background: var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: left, top, background-color; transition: opacity .12s ease; }
+      /* Pulse on hover (JS toggles .hover-anim except in #contact) */
+      @keyframes ringPulse{ 0%{ transform: translate(-50%,-50%) scale(1);} 60%{ transform: translate(-50%,-50%) scale(1.15);} 100%{ transform: translate(-50%,-50%) scale(1.1);} }
+      #cursorRing.hover-anim{ animation: ringPulse .38s ease-out; box-shadow: 0 0 0 6px rgba(0,0,0,.06); }
     }
+
+    /* Theming: make buttons darker on light sections and lighter on dark sections */
+    .panel.theme-light .btn{ background: rgba(12,22,24,.06); color: var(--ink); border-color: rgba(12,22,24,.18); }
+    .panel.theme-light .btn:hover{ background: rgba(12,22,24,.10); }
+    .panel.theme-dark .btn{ background: rgba(255,255,255,.12); color: var(--paper); border-color: rgba(255,255,255,.25); }
+    .panel.theme-dark .btn:hover{ background: rgba(255,255,255,.18); }
+
+    /* Contact panel should be vertically centered */
+    #contact.panel{ display:flex; align-items:center; justify-content:center; }
 
     /* Mobile menu */
     #mobileMenu{ display:none; }
@@ -125,7 +134,6 @@
   <!-- Cursor ring elements (only visible on pointer:fine via CSS) -->
   <div id="cursorRing" aria-hidden="true"></div>
   <div id="cursorDot" aria-hidden="true"></div>
-  <div id="magnifier" aria-hidden="true"></div>
 
   <!-- SCROLL PROGRESS (top) -->
   <div id="progressBar" aria-hidden="true"></div>
@@ -179,7 +187,7 @@
   <main class="hscroll" id="hscroll">
 
     <!-- HERO -->
-    <section id="hero" class="panel is-active bg-[var(--ink)] text-[var(--paper)] flex items-center justify-center text-center relative overflow-hidden">
+  <section id="hero" class="panel is-active theme-dark bg-[var(--ink)] text-[var(--paper)] flex items-center justify-center text-center relative overflow-hidden">
       <!-- subtle orbits as live/3D-ish element -->
       <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vmin] h-[40vmin] rounded-full border border-white/10 animate-[spin_22s_linear_infinite]"></div>
@@ -187,8 +195,8 @@
       </div>
       <div class="max-w-3xl relative">
         <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J Thomas</h1>
-        <p class="text-lg md:text-2xl opacity-90 reveal">System Administrator & Web Developer • AI Enthusiast</p>
-        <p class="mt-5 opacity-95 leading-relaxed reveal font-montserrat">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
+        <p class="text-lg md:text-2xl opacity-90 reveal">AI Enthusiast • System Administrator • Web Developer • </p>
+        <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
         <div class="mt-8 flex items-center justify-center gap-4 reveal">
           <a href="https://github.com/AJT4-de" target="_blank" class="btn teal" aria-label="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
@@ -211,15 +219,15 @@
             </div>
           </div>
         </div>
-        <div class="mt-5 text-sm opacity-80 reveal font-montserrat">Based in Heidelberg, Germany • +49 176 7717 4231</div>
+        <div class="mt-5 text-sm opacity-80 reveal">Based in Heidelberg, Germany • +49 176 7717 4231</div>
       </div>
     </section>
 
     <!-- ABOUT -->
-    <section id="about" class="panel bg-[var(--paper)] text-[var(--ink)]" data-theme="light">
+  <section id="about" class="panel theme-light bg-[var(--paper)] text-[var(--ink)]">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">About Me</h2>
-        <div class="space-y-5 leading-relaxed text-[1.05rem] font-montserrat">
+        <div class="space-y-5 leading-relaxed text-[1.05rem]">
           <p class="reveal">I’m Aldrin — a tech enthusiast who loves using technology to solve real problems. I work at the intersection of <strong>system administration</strong> and <strong>full‑stack development</strong>, and I actively explore <strong>applied AI</strong> to bring practical value to products and teams.</p>
           <p class="reveal">I’ve helped organizations such as <strong>Divine Retreat Ashram</strong> modernize infrastructure and media operations; at <strong>Sony A/c Pvt. Ltd.</strong> I optimized processes and led teams; at <strong>Christ College of Science and Management</strong> I kept campus IT running smoothly; and at <strong>Hailstone Technology</strong> I built responsive PHP websites and full‑stack apps.</p>
           <p class="reveal">I’m currently pursuing a <strong>Master’s in Applied Computer Sciences</strong> at SRH Hochschule Heidelberg. I value reliability, security, and clear UX, and I enjoy collaborating with like‑minded people to ship measurable impact.</p>
@@ -234,10 +242,10 @@
     </section>
 
     <!-- EXPERIENCE -->
-    <section id="experience" class="panel bg-[var(--teal)] text-[var(--paper)]" data-theme="dark">
+  <section id="experience" class="panel theme-dark bg-[var(--teal)] text-[var(--paper)]">
       <div class="max-w-5xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Experience</h2>
-        <div class="space-y-8 font-montserrat">
+        <div class="space-y-8">
           <!-- Divine Retreat Ashram -->
           <article class="reveal">
             <h3 class="text-2xl font-semibold">System Administrator & Technician</h3>
@@ -289,14 +297,14 @@
     </section>
 
     <!-- PROJECTS -->
-    <section id="projects" class="panel bg-[var(--paper)] text-[var(--ink)]" data-theme="light">
+  <section id="projects" class="panel theme-light bg-[var(--paper)] text-[var(--ink)]">
       <div class="max-w-6xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">My Projects</h2>
         <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
           <!-- Cards (based on CV list) -->
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Speech Emotion Detection using AI</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Models to classify human emotions from speech using ML/DL.</p>
+            <p class="mt-2 text-sm opacity-90">Models to classify human emotions from speech using ML/DL.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">ML/DL</span><span class="chip">Signal Processing</span>
             </div>
@@ -307,7 +315,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Energy Optimisation using AI</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">AI‑driven strategies to reduce and balance home energy use.</p>
+            <p class="mt-2 text-sm opacity-90">AI‑driven strategies to reduce and balance home energy use.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">AI</span>
             </div>
@@ -316,7 +324,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">YoloEats — AI Food Platform</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Dietary insights and allergy detection for safer choices.</p>
+            <p class="mt-2 text-sm opacity-90">Dietary insights and allergy detection for safer choices.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Cross‑platform</span><span class="chip">AI</span>
             </div>
@@ -325,7 +333,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">2D Adventure Game</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Created with the Godot Engine; optimized gameplay and visuals.</p>
+            <p class="mt-2 text-sm opacity-90">Created with the Godot Engine; optimized gameplay and visuals.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Godot</span><span class="chip">Game Dev</span>
             </div>
@@ -334,7 +342,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Chatter Haus — Performance Analysis</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Rust + Kubernetes chat app to compare GAE vs GKE under load; benchmarking with Artillery.io.</p>
+            <p class="mt-2 text-sm opacity-90">Rust + Kubernetes chat app to compare GAE vs GKE under load; benchmarking with Artillery.io.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Vite.js</span><span class="chip">GKE</span>
             </div>
@@ -343,7 +351,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">E‑commerce Platform</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Scalable store with Rust backend & Next.js frontend; focused on performance.</p>
+            <p class="mt-2 text-sm opacity-90">Scalable store with Rust backend & Next.js frontend; focused on performance.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Next.js</span>
             </div>
@@ -352,7 +360,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Polyglot — Language‑translation Chat</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Real‑time multilingual chat powered by an open‑source translation model.</p>
+            <p class="mt-2 text-sm opacity-90">Real‑time multilingual chat powered by an open‑source translation model.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">NLP</span>
             </div>
@@ -361,7 +369,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Login — Techfest Website</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">Website for the college tech event; promotion, registration, FAQs.</p>
+            <p class="mt-2 text-sm opacity-90">Website for the college tech event; promotion, registration, FAQs.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">HTML</span><span class="chip">JavaScript</span>
             </div>
@@ -370,7 +378,7 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">MapGo — Delivery & Tracking</h3>
-            <p class="mt-2 text-sm opacity-90 font-montserrat">End‑to‑end package tracking with open‑source maps and chat support.</p>
+            <p class="mt-2 text-sm opacity-90">End‑to‑end package tracking with open‑source maps and chat support.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Web</span><span class="chip">Maps API</span>
             </div>
@@ -381,31 +389,31 @@
     </section>
 
     <!-- SKILLS -->
-    <section id="skills" class="panel bg-[var(--ink)] text-[var(--paper)]" data-theme="dark">
+  <section id="skills" class="panel theme-dark bg-[var(--ink)] text-[var(--paper)]">
       <div class="max-w-6xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Skills</h2>
         <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Programming Languages</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
               <span class="chip">Java</span><span class="chip">Rust</span><span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">C++</span><span class="chip">C</span><span class="chip">HTML</span><span class="chip">PHP</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Frameworks & Libraries</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
               <span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Django</span><span class="chip">Tailwind CSS</span><span class="chip">Godot</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Tools & Platforms</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
               <span class="chip">Docker</span><span class="chip">Kubernetes</span><span class="chip">Networking</span><span class="chip">Security</span><span class="chip">Troubleshooting</span><span class="chip">Performance Tuning</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Design</h3>
-            <div class="mt-2 flex flex-wrap gap-2 text-sm font-montserrat">
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
               <span class="chip">Photoshop</span><span class="chip">Illustrator</span>
             </div>
           </div></div>
@@ -414,10 +422,10 @@
     </section>
 
     <!-- EDUCATION -->
-    <section id="education" class="panel bg-[var(--paper)] text-[var(--ink)]" data-theme="light">
+  <section id="education" class="panel theme-light bg-[var(--paper)] text-[var(--ink)]">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">Education</h2>
-        <div class="space-y-6 font-montserrat">
+        <div class="space-y-6">
           <div class="reveal">
             <div class="font-semibold">Masters in Applied Computer Sciences</div>
             <div class="opacity-80">SRH Hochschule Heidelberg • Oct 2024 – Present • Heidelberg, Germany</div>
@@ -450,15 +458,15 @@
     </section>
 
     <!-- CONTACT -->
-    <section id="contact" class="panel bg-[var(--teal)] text-[var(--paper)]" data-theme="dark">
+  <section id="contact" class="panel theme-dark bg-[var(--teal)] text-[var(--paper)]">
       <div class="max-w-3xl mx-auto text-center">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-4 reveal">Get In Touch</h2>
-        <p class="opacity-95 reveal font-montserrat">I’m open to new opportunities and collaborations. The fastest way to reach me is by email.</p>
+        <p class="opacity-95 reveal">I’m open to new opportunities and collaborations. The fastest way to reach me is by email.</p>
         <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 reveal">
           <a href="mailto:aldrinjt@outlook.com" class="btn teal">aldrinjt@outlook.com</a>
           <a href="mailto:aldrinjthomas4@gmail.com" class="btn">aldrinjthomas4@gmail.com</a>
         </div>
-        <div class="mt-4 text-sm opacity-85 reveal font-montserrat">Phone: +49 176 7717 4231 • Heidelberg, Germany</div>
+        <div class="mt-4 text-sm opacity-85 reveal">Phone: +49 176 7717 4231 • Heidelberg, Germany</div>
       </div>
     </section>
   </main>
@@ -583,7 +591,7 @@
       return best;
     }
 
-    const io = new IntersectionObserver((entries)=>{
+  const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         const el = entry.target; const id = el.id;
         if(entry.isIntersecting && entry.intersectionRatio >= 0.65){
@@ -593,6 +601,8 @@
           Object.values(idToLink).forEach(a=>a.removeAttribute('aria-current'));
           if(idToLink[id]) idToLink[id].setAttribute('aria-current','true');
           updateArrows(panels.indexOf(el));
+      // Toggle button discoverability on active panel
+      try{ setButtonDiscoverability(el); }catch(_){ /* function in cursor block */ }
         }
       });
     }, { root: scrollEl, threshold: [0.65] });
@@ -669,85 +679,125 @@
       wrapper.addEventListener('pointerup', reset);
     });
 
-    // Custom cursor ring (thin ring + tiny dot, slight delay)
+    // Custom cursor: centered ring + dot, dynamic contrast, and button magnifier
     (function(){
       const ring = document.getElementById('cursorRing');
       const dot  = document.getElementById('cursorDot');
-      const magnifier = document.getElementById('magnifier');
-      if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) {
-        ring.style.display='none';
-        dot.style.display='none';
-        magnifier.style.display='none';
-        return;
-      }
+      if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) { ring.style.display='none'; dot.style.display='none'; return; }
 
+      // Position targets and lerp state
       let tx = window.innerWidth/2, ty = window.innerHeight/2; // target
       let x = tx, y = ty;                                      // current
-      const followEase = 0.2;                                  // trailing factor
-      const dotEase = 0.35;
-      let currentTheme = 'light';
+  const followEase = 0.12;                                 // slower for noticeable delay
+  const dotEase = 0.5;                                     // snappier dot
+
+      // Helpers: color parsing and luminance
+      function parseRGBA(str){
+        const m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/i);
+        if(!m) return {r:250,g:244,b:211,a:1};
+        return { r: +m[1], g: +m[2], b: +m[3], a: m[4]!==undefined? +m[4] : 1 };
+      }
+      function relLum({r,g,b}){
+        const srgb = [r,g,b].map(v=> v/255 <= 0.03928 ? v/255/12.92 : Math.pow((v/255+0.055)/1.055, 2.4));
+        return 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
+      }
+      function pickContrastColorAt(x,y){
+        let el = document.elementFromPoint(x,y);
+        let bg = 'rgba(250,244,211,1)'; // fallback to paper
+        while(el && el !== document.documentElement){
+          const cs = getComputedStyle(el);
+          const c = cs.backgroundColor;
+          const {a} = parseRGBA(c);
+          if(a && a > 0){ bg = c; break; }
+          el = el.parentElement;
+        }
+        const L = relLum(parseRGBA(bg));
+        // If background is dark (low L), choose light color; otherwise choose dark
+        return L < 0.5 ? 'rgba(250,250,250,0.95)' : 'rgba(12,22,24,0.95)';
+      }
+
+      function applyCursorStyle(cx, cy){
+        // center using left/top with CSS translate(-50%,-50%)
+        ring.style.left = cx + 'px';
+        ring.style.top  = cy + 'px';
+        dot.style.left  = cx + 'px';
+        dot.style.top   = cy + 'px';
+
+        const color = pickContrastColorAt(cx, cy);
+        ring.style.borderColor = color;
+        dot.style.backgroundColor = color;
+      }
 
       function animateCursor(){
         x += (tx - x) * followEase;
         y += (ty - y) * followEase;
-        ring.style.transform = `translate(calc(${x}px - 50%), calc(${y}px - 50%))`;
-
+        // ring follows with ease, dot is snappier
         const dx = dot._x ?? x, dy = dot._y ?? y;
         const nx = dx + (tx - dx) * dotEase;
         const ny = dy + (ty - dy) * dotEase;
         dot._x = nx; dot._y = ny;
-        dot.style.transform = `translate(calc(${nx}px - 50%), calc(${ny}px - 50%))`;
-
-        if (document.body.classList.contains('magnify-active')) {
-            magnifier.style.transform = `translate(calc(${x}px - 60px), calc(${y}px - 60px))`;
-            const bgX = -(window.scrollX + tx) * 2 + 60;
-            const bgY = -(window.scrollY + ty) * 2 + 60;
-            magnifier.style.backgroundPosition = `${bgX}px ${bgY}px`;
-        }
-
+        applyCursorStyle(x, y);
         requestAnimationFrame(animateCursor);
       }
+      window.addEventListener('mousemove', (e)=>{ tx = e.clientX; ty = e.clientY; }, { passive:true });
 
-      function updateTheme(newTheme) {
-        if (currentTheme === newTheme) return;
-        currentTheme = newTheme;
-        if (newTheme === 'dark') {
-          ring.classList.add('cursor-light');
-          dot.classList.add('cursor-light');
-          magnifier.style.borderColor = 'var(--paper)';
-        } else {
-          ring.classList.remove('cursor-light');
-          dot.classList.remove('cursor-light');
-          magnifier.style.borderColor = 'var(--teal)';
-        }
+      // Scale ring on interactive elements except .btn (lens). No hover effects inside #contact.
+      function grow(e){
+        // ignore inside contact section
+        if(e && e.currentTarget && e.currentTarget.closest('#contact')) return;
+        ring.classList.add('hover-anim');
+        ring.style.width = '40px'; ring.style.height = '40px';
       }
-
-      window.addEventListener('mousemove', (e)=>{
-        tx = e.clientX;
-        ty = e.clientY;
-        const target = e.target.closest('[data-theme]');
-        const newTheme = target ? target.getAttribute('data-theme') : 'light';
-        updateTheme(newTheme);
-      }, { passive:true });
-
-      function setupMagnifier(el) {
-        el.addEventListener('mouseenter', () => {
-            document.body.classList.add('magnify-active');
-            const pageSize = document.body.getBoundingClientRect();
-            magnifier.style.backgroundImage = `url('${document.location.href}')`;
-            magnifier.style.backgroundSize = `${pageSize.width * 2}px ${pageSize.height * 2}px`;
-        });
-        el.addEventListener('mouseleave', () => {
-            document.body.classList.remove('magnify-active');
-        });
-      }
-
-      document.querySelectorAll('a, button, [role="button"]').forEach(el => {
-        setupMagnifier(el);
+      function shrink(){ ring.classList.remove('hover-anim'); ring.style.width = '32px'; ring.style.height = '32px'; }
+      document.querySelectorAll('a, [role="button"], button').forEach(el=>{
+        if(el.classList.contains('btn')) return; // handled by lens behavior
+        el.addEventListener('mouseenter', grow);
+        el.addEventListener('mouseleave', shrink);
       });
 
+      // Lens effect on .btn: hide cursor and show magnified highlight following pointer
+      const btns = document.querySelectorAll('.btn');
+      function relativePos(el, clientX, clientY){
+        const r = el.getBoundingClientRect();
+        return { x: clientX - r.left, y: clientY - r.top };
+      }
+      btns.forEach(btn=>{
+        btn.addEventListener('pointerenter', (e)=>{
+          // Skip special hover animation in contact section; still allow lens but keep ring visible there
+          const inContact = !!btn.closest('#contact');
+          btn.setAttribute('data-lens','on');
+          if(!inContact){
+            ring.style.opacity = '0';
+            dot.style.opacity = '0';
+            btn.classList.add('btn-bounce');
+            setTimeout(()=>btn.classList.remove('btn-bounce'), 260);
+          }
+        });
+        btn.addEventListener('pointerleave', ()=>{
+          btn.removeAttribute('data-lens');
+          if(!btn.closest('#contact')){
+            ring.style.opacity = '.9';
+            dot.style.opacity = '.9';
+          }
+        });
+        btn.addEventListener('pointermove', (e)=>{
+          const p = relativePos(btn, e.clientX, e.clientY);
+          btn.style.setProperty('--mx', p.x + 'px');
+          btn.style.setProperty('--my', p.y + 'px');
+        });
+      });
+
+      // Hide ring when leaving window
       document.addEventListener('mouseleave', ()=>{ ring.style.opacity = '0'; dot.style.opacity = '0'; });
       document.addEventListener('mouseenter', ()=>{ ring.style.opacity = '.9'; dot.style.opacity = '.9'; });
+
+      // Enable discoverability animations when a panel is active (except contact to keep it calmer)
+      function setButtonDiscoverability(activePanel){
+        document.querySelectorAll('.panel .btn').forEach(b=> b.removeAttribute('data-animate'));
+        if(activePanel && activePanel.id !== 'contact'){
+          activePanel.querySelectorAll('.btn').forEach(b=> b.setAttribute('data-animate','on'));
+        }
+      }
 
       requestAnimationFrame(animateCursor);
     })();
