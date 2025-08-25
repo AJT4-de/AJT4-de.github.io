@@ -67,13 +67,14 @@
 
     /* ---------- SMALL UTIL ---------- */
   .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem .9rem; border-radius:.75rem; border:1px solid rgba(12,22,24,.15); transition:transform .15s ease, box-shadow .2s ease, background .2s ease; position: relative; overflow: hidden; }
+  .btn{ --btnscale: 1; --btnrx: 0deg; --btnry: 0deg; transform: scale(var(--btnscale)) rotateX(var(--btnrx)) rotateY(var(--btnry)); transform-style: preserve-3d; }
   .btn:hover{ box-shadow: 0 6px 18px rgba(0,0,0,.08); }
     .btn.teal{ background: var(--teal); color: var(--paper); border-color: transparent; }
     .chip{ display:inline-flex; align-items:center; gap:.375rem; padding:.35rem .6rem; border-radius:999px; border:1px dashed rgba(12,22,24,.25); font-size:.85rem; }
 
   /* Lens effect for buttons (shown while hovering) */
   .btn::before{ content:""; position:absolute; width: 180px; height: 180px; left: calc(var(--mx, -999px) - 90px); top: calc(var(--my, -999px) - 90px); border-radius: 999px; pointer-events:none; opacity:0; transition: opacity .15s ease; box-shadow: 0 6px 18px rgba(0,0,0,.15) inset, 0 2px 10px rgba(0,0,0,.08); background: radial-gradient( circle at 50% 50%, rgba(255,255,255,.35), rgba(255,255,255,.12) 60%, rgba(255,255,255,0) 75% ); mix-blend-mode: screen; }
-  .btn[data-lens="on"]{ transform: scale(1.06); }
+  .btn[data-lens="on"]{ --btnscale: 1.08; transform-origin: var(--mx) var(--my); }
   .btn[data-lens="on"]::before{ opacity: 1; }
 
   /* Button discoverability: subtle periodic shimmer and pulse when visible */
@@ -95,6 +96,10 @@
     .tilt{ perspective: 900px; }
     .tilt-inner{ transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .08s ease; transform-style: preserve-3d; }
 
+  /* Parallax dots in hero */
+  .parallax-layer{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+  .p-dot{ position:absolute; width:6px; height:6px; border-radius:999px; background: rgba(255,255,255,.25); box-shadow: 0 0 10px rgba(255,255,255,.15); }
+
     /* Cursor ring (pointer: fine only) */
     @media (pointer:fine){
       body{ cursor: none; }
@@ -105,11 +110,25 @@
       #cursorRing.hover-anim{ animation: ringPulse .38s ease-out; box-shadow: 0 0 0 6px rgba(0,0,0,.06); }
     }
 
+    /* Global cursor lens for button hover (magnifier) */
+    #cursorLens{ position: fixed; left:0; top:0; width: 140px; height: 140px; border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); z-index: 201; display: none; box-shadow: 0 8px 24px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.25); backdrop-filter: saturate(160%) brightness(1.2) contrast(1.05); }
+    body[data-theme="dark"] #cursorLens{ box-shadow: 0 8px 24px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,255,255,.25); backdrop-filter: saturate(180%) brightness(1.3) contrast(1.08); }
+
     /* Theming: make buttons darker on light sections and lighter on dark sections */
     .panel.theme-light .btn{ background: rgba(12,22,24,.06); color: var(--ink); border-color: rgba(12,22,24,.18); }
     .panel.theme-light .btn:hover{ background: rgba(12,22,24,.10); }
     .panel.theme-dark .btn{ background: rgba(255,255,255,.12); color: var(--paper); border-color: rgba(255,255,255,.25); }
     .panel.theme-dark .btn:hover{ background: rgba(255,255,255,.18); }
+
+  /* Overlay Prev/Next arrow buttons themed by active panel */
+  body[data-theme="light"] #prevBtn,
+  body[data-theme="light"] #nextBtn{ background: rgba(12,22,24,.08); color: var(--ink); border: 1px solid rgba(12,22,24,.18); }
+  body[data-theme="light"] #prevBtn:hover,
+  body[data-theme="light"] #nextBtn:hover{ background: rgba(12,22,24,.12); }
+  body[data-theme="dark"] #prevBtn,
+  body[data-theme="dark"] #nextBtn{ background: rgba(255,255,255,.14); color: var(--paper); border: 1px solid rgba(255,255,255,.28); }
+  body[data-theme="dark"] #prevBtn:hover,
+  body[data-theme="dark"] #nextBtn:hover{ background: rgba(255,255,255,.2); }
 
     /* Contact panel should be vertically centered */
     #contact.panel{ display:flex; align-items:center; justify-content:center; }
@@ -134,6 +153,7 @@
   <!-- Cursor ring elements (only visible on pointer:fine via CSS) -->
   <div id="cursorRing" aria-hidden="true"></div>
   <div id="cursorDot" aria-hidden="true"></div>
+  <div id="cursorLens" aria-hidden="true"></div>
 
   <!-- SCROLL PROGRESS (top) -->
   <div id="progressBar" aria-hidden="true"></div>
@@ -144,7 +164,7 @@
       <div class="h-16 flex items-center justify-between">
         <a id="brandLink" href="#hero" class="font-extrabold tracking-tight text-lg md:text-xl flex items-center gap-2">
           <span class="inline-block h-3 w-3 rounded-full" style="background:var(--teal)"></span>
-          Aldrin&nbsp;J&nbsp;Thomas
+          <span id="brandText">Aldrin&nbsp;J&nbsp;Thomas</span>
         </a>
         <nav class="hidden lg:flex items-center gap-6 text-[15px]">
           <a data-target="about" class="nav-link cursor-pointer">About</a>
@@ -175,10 +195,10 @@
 
   <!-- Floating Prev/Next Arrows (auto-hide at ends) -->
   <div class="hidden md:flex fixed inset-y-0 left-3 right-3 z-40 items-center justify-between pointer-events-none">
-    <button id="prevBtn" class="pointer-events-auto btn" data-prev title="Previous section" aria-label="Previous section">
+  <button id="prevBtn" class="pointer-events-auto btn" data-prev title="Previous section" aria-label="Previous section">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <button id="nextBtn" class="pointer-events-auto btn" data-next title="Next section" aria-label="Next section">
+  <button id="nextBtn" class="pointer-events-auto btn" data-next title="Next section" aria-label="Next section">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   </div>
@@ -194,22 +214,20 @@
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55vmin] h-[55vmin] rounded-full border border-white/10 animate-[spin_40s_linear_infinite]" style="animation-direction: reverse;"></div>
       </div>
       <div class="max-w-3xl relative">
-        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J Thomas</h1>
-        <p class="text-lg md:text-2xl opacity-90 reveal">AI Enthusiast • System Administrator • Web Developer • </p>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J• Thomas</h1>
+        <p class="text-lg md:text-2xl opacity-90 reveal">• AI Enthusiast • System Administrator • Web Developer •</p>
         <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
         <div class="mt-8 flex items-center justify-center gap-4 reveal">
           <a href="https://github.com/AJT4-de" target="_blank" class="btn teal" aria-label="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
             GitHub
           </a>
-          <!-- Email split button -->
-          <div class="relative inline-flex">
-            <a id="emailPrimary" href="mailto:aldrinjt@outlook.com" class="btn teal" title="Email (primary)">
+          <!-- Email single toggle button -->
+          <div class="relative inline-block">
+            <button id="emailButton" class="btn teal" aria-haspopup="menu" aria-expanded="false" title="Email options">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
-              Email
-            </a>
-            <button id="emailToggle" class="btn" aria-haspopup="menu" aria-expanded="false" title="Choose email" style="border-left:0; border-top-left-radius:0; border-bottom-left-radius:0;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="ml-1">Email</span>
+              <svg width="14" height="14" class="ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div id="emailMenu" class="absolute right-0 top-full mt-2 hidden w-72 rounded-xl border bg-white shadow-xl z-10">
               <button data-mail="mailto:aldrinjt@outlook.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Send via Outlook — <span class="font-medium">aldrinjt@outlook.com</span></button>
@@ -577,7 +595,7 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
 
-    function updateArrows(idx){
+  function updateArrows(idx){
       if(!prevBtn || !nextBtn) return;
       // hide left arrow on first, right on last
       prevBtn.style.visibility = idx <= 0 ? 'hidden' : 'visible';
@@ -591,7 +609,7 @@
       return best;
     }
 
-  const io = new IntersectionObserver((entries)=>{
+    const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         const el = entry.target; const id = el.id;
         if(entry.isIntersecting && entry.intersectionRatio >= 0.65){
@@ -603,11 +621,27 @@
           updateArrows(panels.indexOf(el));
       // Toggle button discoverability on active panel
       try{ setButtonDiscoverability(el); }catch(_){ /* function in cursor block */ }
+          // Theme body for arrow buttons
+          if(el.classList.contains('theme-dark')){
+            document.body.setAttribute('data-theme','dark');
+          } else {
+            document.body.setAttribute('data-theme','light');
+          }
+          // Hide brand text only on the first section (hero)
+          const brandText = document.getElementById('brandText');
+          if(brandText){ brandText.style.visibility = (id === 'hero') ? 'hidden' : 'visible'; }
         }
       });
     }, { root: scrollEl, threshold: [0.65] });
     panels.forEach(p=>io.observe(p));
     updateArrows(0); // init
+    // Initialize theme and brand visibility based on the first active panel
+    const firstActive = document.querySelector('.panel.is-active') || panels[0];
+    if(firstActive){
+      document.body.setAttribute('data-theme', firstActive.classList.contains('theme-dark') ? 'dark' : 'light');
+      const brandText = document.getElementById('brandText');
+      if(brandText){ brandText.style.visibility = (firstActive.id === 'hero') ? 'hidden' : 'visible'; }
+    }
 
     // Nav clicks → horizontal snap to panel
     function scrollToPanel(id){
@@ -636,21 +670,27 @@
     function openMobile(){ mobileMenu.setAttribute('data-open','true'); mobileMenu.style.display = 'block'; }
     hamburger.addEventListener('click', ()=>{ const open = mobileMenu.getAttribute('data-open') === 'true'; open ? closeMobile() : openMobile(); });
 
-    // Email split button behavior
-    const emailToggle = document.getElementById('emailToggle');
-    const emailMenu   = document.getElementById('emailMenu');
-    const emailPrimary= document.getElementById('emailPrimary');
-    emailToggle.addEventListener('click', ()=>{ emailMenu.classList.toggle('hidden'); emailToggle.setAttribute('aria-expanded', emailMenu.classList.contains('hidden') ? 'false' : 'true'); });
-    emailMenu.querySelectorAll('[data-mail]').forEach(btn=> btn.addEventListener('click', ()=>{
-      const mailto = btn.getAttribute('data-mail');
-      emailPrimary.href = mailto; emailMenu.classList.add('hidden');
-      window.location.href = mailto; // open immediately
-    }));
-    document.addEventListener('click', (e)=>{ if(!emailMenu.contains(e.target) && e.target !== emailToggle) emailMenu.classList.add('hidden'); });
-    document.getElementById('copyEmails').addEventListener('click', async ()=>{
-      try { await navigator.clipboard.writeText('aldrinjt@outlook.com; aldrinjthomas4@gmail.com'); alert('Emails copied to clipboard'); } catch(e){ alert('Copy failed — you can copy manually: aldrinjt@outlook.com, aldrinjthomas4@gmail.com'); }
-      emailMenu.classList.add('hidden');
-    });
+    // Email single button dropdown behavior
+    const emailBtn  = document.getElementById('emailButton');
+    const emailMenu = document.getElementById('emailMenu');
+    if(emailBtn && emailMenu){
+      emailBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const open = !emailMenu.classList.contains('hidden');
+        emailMenu.classList.toggle('hidden');
+        emailBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      });
+      emailMenu.querySelectorAll('[data-mail]').forEach(btn=> btn.addEventListener('click', ()=>{
+        const mailto = btn.getAttribute('data-mail');
+        emailMenu.classList.add('hidden');
+        window.location.href = mailto; // open immediately
+      }));
+      document.addEventListener('click', (e)=>{ if(!emailMenu.contains(e.target) && e.target !== emailBtn) emailMenu.classList.add('hidden'); });
+      document.getElementById('copyEmails')?.addEventListener('click', async ()=>{
+        try { await navigator.clipboard.writeText('aldrinjt@outlook.com; aldrinjthomas4@gmail.com'); alert('Emails copied to clipboard'); } catch(e){ alert('Copy failed — copy manually: aldrinjt@outlook.com, aldrinjthomas4@gmail.com'); }
+        emailMenu.classList.add('hidden');
+      });
+    }
 
     // Reveal-on-scroll for elements marked .reveal (works for vertical scroll inside panels, too)
     const revealObserver = new IntersectionObserver((entries)=>{
@@ -683,13 +723,14 @@
     (function(){
       const ring = document.getElementById('cursorRing');
       const dot  = document.getElementById('cursorDot');
+      const lens = document.getElementById('cursorLens');
       if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) { ring.style.display='none'; dot.style.display='none'; return; }
 
       // Position targets and lerp state
       let tx = window.innerWidth/2, ty = window.innerHeight/2; // target
       let x = tx, y = ty;                                      // current
-  const followEase = 0.12;                                 // slower for noticeable delay
-  const dotEase = 0.5;                                     // snappier dot
+  const followEase = 1;                                    // instant follow (no delay)
+  const dotEase = 1;                                       // instant dot
 
       // Helpers: color parsing and luminance
       function parseRGBA(str){
@@ -729,13 +770,8 @@
       }
 
       function animateCursor(){
-        x += (tx - x) * followEase;
-        y += (ty - y) * followEase;
-        // ring follows with ease, dot is snappier
-        const dx = dot._x ?? x, dy = dot._y ?? y;
-        const nx = dx + (tx - dx) * dotEase;
-        const ny = dy + (ty - dy) * dotEase;
-        dot._x = nx; dot._y = ny;
+        // No delay: ring and dot both at target
+        x = tx; y = ty; dot._x = tx; dot._y = ty;
         applyCursorStyle(x, y);
         requestAnimationFrame(animateCursor);
       }
@@ -755,35 +791,56 @@
         el.addEventListener('mouseleave', shrink);
       });
 
-      // Lens effect on .btn: hide cursor and show magnified highlight following pointer
-      const btns = document.querySelectorAll('.btn');
+      // Lens effect on .btn and card surfaces: show a global magnifier following the cursor; hide ring/dot outside contact
+      const lensTargets = document.querySelectorAll('.btn, .tilt .tilt-inner');
       function relativePos(el, clientX, clientY){
         const r = el.getBoundingClientRect();
         return { x: clientX - r.left, y: clientY - r.top };
       }
-      btns.forEach(btn=>{
-        btn.addEventListener('pointerenter', (e)=>{
+      lensTargets.forEach(target=>{
+        target.addEventListener('pointerenter', (e)=>{
           // Skip special hover animation in contact section; still allow lens but keep ring visible there
-          const inContact = !!btn.closest('#contact');
-          btn.setAttribute('data-lens','on');
+          const inContact = !!target.closest('#contact');
+          target.setAttribute('data-lens','on');
+          // show global lens
+          if(lens){ lens.style.display = 'block'; }
           if(!inContact){
             ring.style.opacity = '0';
             dot.style.opacity = '0';
-            btn.classList.add('btn-bounce');
-            setTimeout(()=>btn.classList.remove('btn-bounce'), 260);
+            if(target.classList.contains('btn')){
+              target.classList.add('btn-bounce');
+              setTimeout(()=>target.classList.remove('btn-bounce'), 260);
+            }
           }
         });
-        btn.addEventListener('pointerleave', ()=>{
-          btn.removeAttribute('data-lens');
-          if(!btn.closest('#contact')){
+        target.addEventListener('pointerleave', ()=>{
+          target.removeAttribute('data-lens');
+          if(lens){ lens.style.display = 'none'; }
+          if(!target.closest('#contact')){
             ring.style.opacity = '.9';
             dot.style.opacity = '.9';
           }
+          // reset tilt for buttons
+          if(target.classList.contains('btn')){
+            target.style.setProperty('--btnrx', '0deg');
+            target.style.setProperty('--btnry', '0deg');
+          }
         });
-        btn.addEventListener('pointermove', (e)=>{
-          const p = relativePos(btn, e.clientX, e.clientY);
-          btn.style.setProperty('--mx', p.x + 'px');
-          btn.style.setProperty('--my', p.y + 'px');
+        target.addEventListener('pointermove', (e)=>{
+          const p = relativePos(target, e.clientX, e.clientY);
+          target.style.setProperty('--mx', p.x + 'px');
+          target.style.setProperty('--my', p.y + 'px');
+          if(lens){ lens.style.left = e.clientX + 'px'; lens.style.top = e.clientY + 'px'; }
+          // 3D tilt for buttons based on cursor position
+          if(target.classList.contains('btn')){
+            const rect = target.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width;   // 0..1
+            const py = (e.clientY - rect.top) / rect.height;   // 0..1
+            const ry = (px - 0.5) * 10;  // degrees
+            const rx = -(py - 0.5) * 10;
+            target.style.setProperty('--btnrx', rx.toFixed(2) + 'deg');
+            target.style.setProperty('--btnry', ry.toFixed(2) + 'deg');
+          }
         });
       });
 
@@ -800,6 +857,39 @@
       }
 
       requestAnimationFrame(animateCursor);
+    })();
+
+    // Hero parallax dots (extra 3D)
+    (function(){
+      const hero = document.getElementById('hero');
+      if(!hero) return;
+      const layer = document.createElement('div');
+      layer.className = 'parallax-layer';
+      hero.appendChild(layer);
+      const dots = [];
+      for(let i=0;i<22;i++){
+        const d = document.createElement('span');
+        d.className = 'p-dot';
+        const depth = 0.12 + Math.random()*0.55;
+        d.dataset.depth = depth.toFixed(3);
+        d.style.left = Math.random()*100 + '%';
+        d.style.top  = Math.random()*100 + '%';
+        const size = 3 + Math.random()*6; d.style.width = d.style.height = size+'px';
+        layer.appendChild(d);
+        dots.push(d);
+      }
+      function updateParallax(e){
+        // Only animate when hero is active
+        if(!hero.classList.contains('is-active')) return;
+        const cx = window.innerWidth/2, cy = window.innerHeight/2;
+        const dx = (e.clientX - cx) / cx; // -1..1
+        const dy = (e.clientY - cy) / cy; // -1..1
+        dots.forEach(el=>{
+          const depth = parseFloat(el.dataset.depth||'0.3');
+          el.style.transform = `translate(${dx*depth*22}px, ${dy*depth*22}px)`;
+        });
+      }
+      window.addEventListener('mousemove', updateParallax, { passive:true });
     })();
   </script>
 </body>
