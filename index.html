@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aldrin J Thomas • Portfolio</title>
+  <title>Aldrin J. Thomas • Portfolio</title>
   <!-- Favicons -->
   <link rel="apple-touch-icon" sizes="180x180" href="Favicon/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="Favicon/favicon-32x32.png" />
@@ -71,6 +71,16 @@
     .nav-link::after{ content: ""; position:absolute; left:0; right:0; bottom:-6px; height:2px; background: var(--teal); transform:scaleX(0); transform-origin:left; transition: transform .25s ease; }
     .nav-link:hover::after, .nav-link[aria-current="true"]::after{ transform:scaleX(1); }
 
+  /* Hero-only transparent navbar and adjusted colors */
+  body[data-hero="true"] header.glass{ background: transparent !important; backdrop-filter: none !important; box-shadow: none !important; border-bottom-color: transparent !important; }
+  body[data-hero="true"] header .nav-link{ color: rgba(250,250,250,.95); }
+  body[data-hero="true"] header .nav-link::after{ background: rgba(250,250,250,.9); }
+  body[data-hero="true"] #brandLink{ color: rgba(250,250,250,.96); }
+  body[data-hero="true"] #brandLink > span:first-child{ background: rgba(250,250,250,.92) !important; }
+  /* Keep mobile menu readable over hero */
+  body[data-hero="true"] #mobileMenu{ background: rgba(0,0,0,.55); backdrop-filter: blur(8px); }
+  body[data-hero="true"] #mobileMenu a{ color: rgba(250,250,250,.96); }
+
     /* ---------- SMALL UTIL ---------- */
   .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem .9rem; border-radius:.75rem; border:1px solid rgba(12,22,24,.15); transition:transform .15s ease, box-shadow .2s ease, background .2s ease; position: relative; overflow: hidden; }
   .btn{ --btnscale: 1; --btnrx: 0deg; --btnry: 0deg; transform: scale(var(--btnscale)) rotateX(var(--btnrx)) rotateY(var(--btnry)); transform-style: preserve-3d; }
@@ -90,6 +100,13 @@
   @keyframes shimmer{ 0%{ transform: translateX(-120%);} 100%{ transform: translateX(120%);} }
   @keyframes btnBeacon{ 0%,100%{ box-shadow: 0 0 0 0 rgba(0,0,0,.0);} 50%{ box-shadow: 0 0 0 8px rgba(0,0,0,.05);} }
 
+
+  /* Nav hover depth/glow */
+  .nav-link{ transition: transform .15s ease, text-shadow .2s ease; }
+  .nav-link:hover{ transform: translateY(-1px); }
+  body[data-theme="dark"] .nav-link:hover{ text-shadow: 0 3px 12px rgba(255,255,255,.25); }
+  body[data-theme="light"] .nav-link:hover{ text-shadow: 0 3px 12px rgba(12,22,24,.16); }
+
   /* Hover bounce for buttons (applied via JS outside contact) */
   @keyframes btnHover{ 0%{ transform: scale(1); } 60%{ transform: scale(1.08);} 100%{ transform: scale(1.06);} }
   .btn.btn-bounce{ animation: btnHover .28s ease-out; }
@@ -105,6 +122,40 @@
   /* Parallax dots in hero */
   .parallax-layer{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
   .p-dot{ position:absolute; width:6px; height:6px; border-radius:999px; background: rgba(255,255,255,.25); box-shadow: 0 0 10px rgba(255,255,255,.15); }
+
+  /* Extra 3D + animation primitives */
+  @keyframes bob{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
+  @keyframes bobAlt{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(6px);} }
+  @keyframes rotateCube{ 0%{ transform: rotateX(0deg) rotateY(0deg);} 100%{ transform: rotateX(360deg) rotateY(360deg);} }
+  @keyframes glowPulseLight{ 0%,100%{ box-shadow: 0 0 0 3px rgba(255,255,255,.15);} 50%{ box-shadow: 0 0 0 7px rgba(255,255,255,.08);} }
+  @keyframes glowPulseDark{ 0%,100%{ box-shadow: 0 0 0 3px rgba(12,22,24,.16);} 50%{ box-shadow: 0 0 0 7px rgba(12,22,24,.08);} }
+
+  /* Hero rotating cube (subtle, behind content) */
+  .cube-wrap{ position:absolute; left:50%; top:50%; transform: translate(-50%,-50%); width: 160px; height: 160px; perspective: 900px; opacity: .25; filter: blur(.2px); pointer-events: none; }
+  .cube{ position:relative; width:100%; height:100%; transform-style: preserve-3d; animation: rotateCube 16s linear infinite; }
+  .cube .face{ position:absolute; inset:0; border: 1px solid rgba(255,255,255,.18); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); }
+  .cube .front { transform: translateZ(80px); }
+  .cube .back  { transform: rotateY(180deg) translateZ(80px); }
+  .cube .right { transform: rotateY(90deg) translateZ(80px); }
+  .cube .left  { transform: rotateY(-90deg) translateZ(80px); }
+  .cube .top   { transform: rotateX(90deg) translateZ(80px); }
+  .cube .bottom{ transform: rotateX(-90deg) translateZ(80px); }
+
+  /* Card glare for tilt elements */
+  .tilt .tilt-inner[data-glare]::after{ content:""; position:absolute; inset:-2px; border-radius: inherit; pointer-events:none; opacity:.0; transition: opacity .2s ease; mix-blend-mode: screen;
+    background: radial-gradient(220px 220px at var(--gx, -999px) var(--gy, -999px), rgba(255,255,255,.18), rgba(255,255,255,.06) 40%, transparent 60%);
+  }
+  .tilt:hover .tilt-inner[data-glare]::after{ opacity: .9; }
+
+  /* Bobbing chips */
+  .chip.bobbing{ animation: bob var(--bobDur,4.2s) ease-in-out infinite; }
+  .chip.bobbing-alt{ animation: bobAlt var(--bobDur,4.2s) ease-in-out infinite; }
+  .chip{ transition: transform .15s ease, box-shadow .2s ease; }
+  .chip:hover{ transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.08); }
+
+  /* Timeline node pulse */
+  .panel.theme-light .timeline .tli::before{ animation: glowPulseDark 3.6s ease-in-out infinite; }
+  .panel.theme-dark  .timeline .tli::before{ animation: glowPulseLight 3.6s ease-in-out infinite; }
 
     /* Cursor ring (pointer: fine only) */
     @media (pointer:fine){
@@ -141,6 +192,9 @@
   /* FAB styles (GitHub link) */
   .fab{ position: fixed; right: 18px; bottom: 22px; width: 54px; height: 54px; display:flex; align-items:center; justify-content:center; border-radius: 999px; z-index: 120; border: 1px solid transparent; box-shadow: 0 10px 24px rgba(0,0,0,.18); transition: transform .2s ease, opacity .2s ease, background .2s ease, border-color .2s ease; opacity: 0; transform: scale(.9); pointer-events: none; }
   .fab:hover{ transform: scale(1.05); }
+  .fab{ animation: bob 7s ease-in-out infinite; }
+  .fab::before{ content:""; position:absolute; inset:-6px; border-radius:999px; border:1px solid currentColor; opacity:.18; animation: fabRing 5.5s ease-in-out infinite; }
+  @keyframes fabRing{ 0%,100%{ transform: scale(1); opacity:.16;} 50%{ transform: scale(1.09); opacity:.28;} }
   body[data-show-fab="true"] .fab{ opacity: 1; transform: scale(1); pointer-events: auto; }
   body[data-theme="light"] .fab{ background: rgba(12,22,24,.08); color: var(--ink); border-color: rgba(12,22,24,.18); }
   body[data-theme="light"] .fab:hover{ background: rgba(12,22,24,.12); }
@@ -176,6 +230,8 @@
     @media (prefers-reduced-motion: reduce){
       .panel{ transition: none !important; }
       .reveal{ transition: none !important; }
+  .cube, .chip, .fab, #prevBtn, #nextBtn, .timeline .tli::before{ animation: none !important; }
+  .timeline::before, .panel h2.font-extrabold::after, .fab::before{ animation: none !important; }
     }
 
   /* Timeline styles for Experience & Education */
@@ -186,6 +242,15 @@
   .panel.theme-light .timeline .tli{ border-left-color: rgba(12,22,24,.22); }
   .panel.theme-dark .timeline .tli{ border-left-color: rgba(255,255,255,.28); }
   .panel.theme-dark .timeline .tli::before{ box-shadow: 0 0 0 3px rgba(255,255,255,.18); }
+  /* Flowing highlight along timeline */
+  .timeline::before{ content:""; position:absolute; left: .5rem; top:0; bottom:0; width:2px; background-size: 100% 200%; filter: blur(.2px); opacity:.6; pointer-events:none; animation: lineFlow 8s ease-in-out infinite; }
+  .panel.theme-light .timeline::before{ background-image: linear-gradient(180deg, rgba(12,22,24,0), rgba(12,22,24,.35), rgba(12,22,24,0)); }
+  .panel.theme-dark  .timeline::before{ background-image: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0)); }
+  @keyframes lineFlow{ 0%{ background-position: 0 0; } 100%{ background-position: 0 200%; } }
+
+  /* Button click ripple */
+  .btn .ripple{ position:absolute; border-radius:999px; background: currentColor; opacity:.18; transform: scale(0); pointer-events:none; animation: rippleExpand .6s ease-out forwards; mix-blend-mode: multiply; }
+  @keyframes rippleExpand{ to{ transform: scale(1); opacity:0; } }
   </style>
 </head>
 <body>
@@ -214,7 +279,7 @@
       <div class="h-16 flex items-center justify-between">
         <a id="brandLink" href="#hero" class="font-extrabold tracking-tight text-lg md:text-xl flex items-center gap-2">
           <span class="inline-block h-3 w-3 rounded-full" style="background:var(--teal)"></span>
-          <span id="brandText">Aldrin&nbsp;J&nbsp;Thomas</span>
+          <span id="brandText">Aldrin&nbsp;J.&nbsp;Thomas</span>
         </a>
         <nav class="hidden lg:flex items-center gap-6 text-[15px]">
           <a data-target="about" class="nav-link cursor-pointer">About</a>
@@ -263,8 +328,19 @@
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vmin] h-[40vmin] rounded-full border border-white/10 animate-[spin_22s_linear_infinite]"></div>
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55vmin] h-[55vmin] rounded-full border border-white/10 animate-[spin_40s_linear_infinite]" style="animation-direction: reverse;"></div>
       </div>
+      <!-- rotating cube background -->
+      <div class="cube-wrap" aria-hidden="true">
+        <div class="cube">
+          <div class="face front"></div>
+          <div class="face back"></div>
+          <div class="face right"></div>
+          <div class="face left"></div>
+          <div class="face top"></div>
+          <div class="face bottom"></div>
+        </div>
+      </div>
       <div class="max-w-3xl relative">
-  <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J Thomas</h1>
+  <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J• Thomas</h1>
         <p class="text-lg md:text-2xl opacity-90 reveal">• AI Enthusiast • System Administrator • Web Developer •</p>
         <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
         <div class="mt-8 flex items-center justify-center gap-4 reveal">
@@ -360,10 +436,10 @@
     <!-- PROJECTS -->
   <section id="projects" class="panel theme-light bg-[var(--paper)] text-[var(--ink)]">
       <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">My Projects</h2>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">Projects</h2>
         <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
           <!-- Cards (based on CV list) -->
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">Speech Emotion Detection using AI</h3>
             <p class="mt-2 text-sm opacity-90">Comparative study implementing and evaluating ML/DL models for classifying human emotions from speech; demonstrates solid audio signal processing and model selection.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -374,7 +450,7 @@
             </div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">Energy Optimisation using AI</h3>
             <p class="mt-2 text-sm opacity-90">Data‑driven system that optimizes home energy use with real‑time recommendations aligned to grid pricing and weather to reduce cost and maximize renewables.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -383,7 +459,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Energy-Optimisation-using-AI" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">YoloEats — AI Food Platform</h3>
             <p class="mt-2 text-sm opacity-90">Full‑stack mobile platform delivering personalized dietary insights, allergy alerts, and product recommendations via AI‑powered scanning and analysis.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -392,7 +468,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/YoloEats" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">2D Adventure Game</h3>
             <p class="mt-2 text-sm opacity-90">Engaging 2D sidescroller inspired by Naruto, built in Godot with a focus on polished gameplay, visuals, and performance.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -401,7 +477,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Cursed-Eye---Legacy-of-Pain-Naruto-" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">Chatter Haus — Performance Analysis</h3>
             <p class="mt-2 text-sm opacity-90">Chat app to benchmark Google App Engine vs Google Kubernetes Engine under load; Rust backend with Axiom, Vite.js frontend, tests via Artillery.io.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -410,7 +486,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Chat-application-comparing-GAE-and-GKE" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">E‑commerce Platform</h3>
             <p class="mt-2 text-sm opacity-90">Collaborative build using Rust (backend), Next.js (frontend), and Axiom; emphasizes scalability, performance, and a modern UX.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -419,7 +495,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/911-Ecommerce-platform" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">Polyglot — Language‑translation Chat</h3>
             <p class="mt-2 text-sm opacity-90">Real‑time multilingual chat using an open‑source translation model in Python; enables seamless cross‑language communication with a simple interface.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -428,7 +504,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Polyglot" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">Login — Techfest Website</h3>
             <p class="mt-2 text-sm opacity-90">Event website for the college tech fest; supports promotion, participant registration, FAQ, and event updates using HTML and JavaScript.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -437,7 +513,7 @@
             <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
-          <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
+            <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal" data-glare>
             <h3 class="font-semibold text-lg">MapGo — Delivery & Tracking</h3>
             <p class="mt-2 text-sm opacity-90">End‑to‑end package delivery and tracking app with real‑time updates and chat among client, seller, and delivery partner using open‑source maps.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -494,7 +570,7 @@
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">Education</h2>
         <div class="timeline space-y-6">
           <div class="reveal tli">
-            <div class="font-semibold">Masters in Applied Computer Sciences</div>
+            <div class="font-semibold">Master's in Applied Computer Sciences</div>
             <div class="opacity-80">SRH Hochschule Heidelberg • Oct 2024 – Present • Heidelberg, Germany</div>
           </div>
           <div class="reveal tli">
@@ -676,6 +752,8 @@
           // Brand text: show 'portfolio' on hero only; name otherwise
           const brandText = document.getElementById('brandText');
           if(brandText){ brandText.textContent = (id === 'hero') ? 'portfolio' : 'Aldrin\u00A0J\u00A0Thomas'; }
+          // Toggle hero-transparent header mode
+          document.body.setAttribute('data-hero', id === 'hero' ? 'true' : 'false');
           // FAB visible from section 2 onward
           const idx = panels.indexOf(el);
           document.body.setAttribute('data-show-fab', idx >= 1 ? 'true' : 'false');
@@ -696,7 +774,7 @@
       document.body.setAttribute('data-theme', firstActive.classList.contains('theme-dark') ? 'dark' : 'light');
       const brandText = document.getElementById('brandText');
       if(brandText){ brandText.textContent = (firstActive.id === 'hero') ? 'portfolio' : 'Aldrin\u00A0J\u00A0Thomas'; }
-      // FAB visibility
+  // FAB visibility
       const idx = panels.indexOf(firstActive);
       document.body.setAttribute('data-show-fab', idx >= 1 ? 'true' : 'false');
       // Swipe hint and desktop nudge
@@ -704,6 +782,8 @@
       if(swipeHint){ swipeHint.style.display = (firstActive.id === 'hero') ? 'flex' : 'none'; }
       const nextBtnInit = document.getElementById('nextBtn');
       nextBtnInit?.classList.toggle('hero-nudge', firstActive.id === 'hero');
+  // Initial hero-transparent header mode
+  document.body.setAttribute('data-hero', firstActive.id === 'hero' ? 'true' : 'false');
     }
 
     // Nav clicks → horizontal snap to panel
@@ -774,6 +854,13 @@
         const rx = -(py - 0.5) * 2 * max;
         inner.style.setProperty('--rx', rx.toFixed(2) + 'deg');
         inner.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+        // Update glare highlight position if enabled
+        if(inner.hasAttribute('data-glare')){
+          const gx = (e.clientX - rect.left);
+          const gy = (e.clientY - rect.top);
+          inner.style.setProperty('--gx', gx + 'px');
+          inner.style.setProperty('--gy', gy + 'px');
+        }
       }
       function reset(){ inner.style.setProperty('--rx','0deg'); inner.style.setProperty('--ry','0deg'); }
       wrapper.addEventListener('pointermove', onMove);
@@ -781,6 +868,36 @@
       wrapper.addEventListener('pointerdown', onMove);
       wrapper.addEventListener('pointerup', reset);
     });
+
+    // Add bobbing animation to chips with slight variation
+    (function(){
+      const chips = document.querySelectorAll('.chip');
+      chips.forEach((c, i)=>{
+        const alt = i % 2 === 1;
+        c.classList.add(alt ? 'bobbing-alt' : 'bobbing');
+        const dur = (4 + Math.random()*1.2).toFixed(2) + 's';
+        c.style.setProperty('--bobDur', dur);
+      });
+    })();
+
+    // Button click ripple effect
+    (function(){
+      const buttons = document.querySelectorAll('.btn');
+      buttons.forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          // Don't add ripple for disabled or non-visible
+          const rect = btn.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height) * 1.2;
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+          ripple.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+          btn.appendChild(ripple);
+          ripple.addEventListener('animationend', ()=> ripple.remove());
+        }, { passive: true });
+      });
+    })();
 
     // Custom cursor: centered ring + dot, dynamic contrast, and button magnifier
     (function(){
