@@ -130,6 +130,26 @@
   body[data-theme="dark"] #prevBtn:hover,
   body[data-theme="dark"] #nextBtn:hover{ background: rgba(255,255,255,.2); }
 
+  /* FAB styles (GitHub link) */
+  .fab{ position: fixed; right: 18px; bottom: 22px; width: 54px; height: 54px; display:flex; align-items:center; justify-content:center; border-radius: 999px; z-index: 120; border: 1px solid transparent; box-shadow: 0 10px 24px rgba(0,0,0,.18); transition: transform .2s ease, opacity .2s ease, background .2s ease, border-color .2s ease; opacity: 0; transform: scale(.9); pointer-events: none; }
+  .fab:hover{ transform: scale(1.05); }
+  body[data-show-fab="true"] .fab{ opacity: 1; transform: scale(1); pointer-events: auto; }
+  body[data-theme="light"] .fab{ background: rgba(12,22,24,.08); color: var(--ink); border-color: rgba(12,22,24,.18); }
+  body[data-theme="light"] .fab:hover{ background: rgba(12,22,24,.12); }
+  body[data-theme="dark"] .fab{ background: rgba(255,255,255,.14); color: var(--paper); border-color: rgba(255,255,255,.28); }
+  body[data-theme="dark"] .fab:hover{ background: rgba(255,255,255,.2); }
+
+  /* Swipe hint (mobile only) */
+  #swipeHint{ position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: none; align-items:center; gap:.4rem; z-index: 110; padding: .4rem .7rem; border-radius: 999px; font-size: .9rem; border: 1px solid rgba(0,0,0,.12); background: rgba(250,250,250,.85); box-shadow: 0 8px 20px rgba(0,0,0,.12); animation: swipePulse 1.6s ease-in-out infinite; }
+  #swipeHint .hint-icon{ animation: hintSlide 1s ease-in-out infinite; }
+  @keyframes swipePulse{ 0%,100%{ transform: translateX(-50%) scale(1);} 50%{ transform: translateX(-50%) scale(1.05);} }
+  @keyframes hintSlide{ 0%,100%{ opacity:.6; } 50%{ opacity:1; } }
+  @media (min-width: 1024px){ #swipeHint{ display:none !important; } }
+
+  /* Desktop nudge for Next button when hero is active */
+  @keyframes nudgeRight { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(6px); } }
+  #nextBtn.hero-nudge{ animation: nudgeRight 1.8s ease-in-out infinite; }
+
     /* Contact panel should be vertically centered */
     #contact.panel{ display:flex; align-items:center; justify-content:center; }
 
@@ -157,6 +177,17 @@
 
   <!-- SCROLL PROGRESS (top) -->
   <div id="progressBar" aria-hidden="true"></div>
+
+  <!-- Global GitHub FAB (shown from section 2 onward) -->
+  <a id="globalGitHubFab" class="fab github" href="https://github.com/AJT4-de" target="_blank" aria-label="GitHub" title="GitHub">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
+  </a>
+
+  <!-- Swipe hint (mobile) -->
+  <div id="swipeHint" aria-hidden="true">
+    <span class="hint-icon">⟷</span>
+    <span class="hint-text">Swipe</span>
+  </div>
 
   <!-- Sticky Header / Nav -->
   <header class="fixed top-0 inset-x-0 z-50 glass border-b border-[rgba(0,70,67,.15)]">
@@ -214,7 +245,7 @@
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55vmin] h-[55vmin] rounded-full border border-white/10 animate-[spin_40s_linear_infinite]" style="animation-direction: reverse;"></div>
       </div>
       <div class="max-w-3xl relative">
-        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J• Thomas</h1>
+  <h1 class="text-4xl md:text-6xl font-extrabold mb-4 reveal">Aldrin J Thomas</h1>
         <p class="text-lg md:text-2xl opacity-90 reveal">• AI Enthusiast • System Administrator • Web Developer •</p>
         <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
         <div class="mt-8 flex items-center justify-center gap-4 reveal">
@@ -230,8 +261,8 @@
               <svg width="14" height="14" class="ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div id="emailMenu" class="absolute right-0 top-full mt-2 hidden w-72 rounded-xl border bg-white shadow-xl z-10">
-              <button data-mail="mailto:aldrinjt@outlook.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Send via Outlook — <span class="font-medium">aldrinjt@outlook.com</span></button>
-              <button data-mail="mailto:aldrinjthomas4@gmail.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Send via Gmail — <span class="font-medium">aldrinjthomas4@gmail.com</span></button>
+              <button data-mail="mailto:aldrinjt@outlook.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0, 70, 67, 0.58)]">Send via Outlook — <span class="font-medium">aldrinjt@outlook.com</span></button>
+              <button data-mail="mailto:aldrinjthomas4@gmail.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0, 70, 67, 0.58)]">Send via Gmail — <span class="font-medium">aldrinjthomas4@gmail.com</span></button>
               <div class="border-t"></div>
               <button id="copyEmails" class="w-full text-left px-3 py-2 hover:bg-[rgba(0,70,67,.08)]">Copy both emails</button>
             </div>
@@ -246,15 +277,8 @@
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">About Me</h2>
         <div class="space-y-5 leading-relaxed text-[1.05rem]">
-          <p class="reveal">I’m Aldrin — a tech enthusiast who loves using technology to solve real problems. I work at the intersection of <strong>system administration</strong> and <strong>full‑stack development</strong>, and I actively explore <strong>applied AI</strong> to bring practical value to products and teams.</p>
-          <p class="reveal">I’ve helped organizations such as <strong>Divine Retreat Ashram</strong> modernize infrastructure and media operations; at <strong>Sony A/c Pvt. Ltd.</strong> I optimized processes and led teams; at <strong>Christ College of Science and Management</strong> I kept campus IT running smoothly; and at <strong>Hailstone Technology</strong> I built responsive PHP websites and full‑stack apps.</p>
-          <p class="reveal">I’m currently pursuing a <strong>Master’s in Applied Computer Sciences</strong> at SRH Hochschule Heidelberg. I value reliability, security, and clear UX, and I enjoy collaborating with like‑minded people to ship measurable impact.</p>
-        </div>
-        <div class="mt-6 flex flex-wrap gap-3 reveal">
-          <span class="chip">Heidelberg, DE</span>
-          <span class="chip">English (native)</span>
-          <span class="chip">German</span>
-          <span class="chip">Hindi</span>
+      <p class="reveal">Tech enthusiast passionate about leveraging technology to solve complex problems. Eager to collaborate with like‑minded individuals to expand knowledge and experience in the tech industry.</p>
+      <p class="reveal">I work across <strong>system administration</strong>, <strong>full‑stack development</strong>, and <strong>applied AI</strong> — with hands‑on experience at <strong>Divine Retreat Ashram</strong>, <strong>Sony A/c Pvt. Ltd.</strong>, <strong>Christ College of Science and Management</strong>, and <strong>Hailstone Technology</strong>. I’m currently pursuing a <strong>Master’s in Applied Computer Sciences</strong> at SRH Hochschule Heidelberg.</p>
         </div>
       </div>
     </section>
@@ -270,9 +294,9 @@
             <div class="opacity-90">Divine Retreat Ashram — Faridabad, India • Jul 2023 – Sep 2024</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
               <li>Revitalized and managed the media wing, streamlining operations and enhancing content delivery.</li>
-              <li>Upgraded network infrastructure, improving connectivity, speed, and reliability.</li>
-              <li>Developed and maintained the organization’s website and server with a focus on uptime, security, and performance.</li>
-              <li>Implemented new tooling to reduce operational delays and maximize workflow efficiency.</li>
+              <li>Upgraded network infrastructure, improving connectivity, speed, and system reliability.</li>
+              <li>Developed and maintained the organization’s website and server, ensuring optimal uptime, security, and performance.</li>
+              <li>Implemented innovative technologies to reduce operational delays and maximize workflow efficiency.</li>
             </ul>
           </article>
 
@@ -281,10 +305,10 @@
             <h3 class="text-2xl font-semibold">Manager</h3>
             <div class="opacity-90">Sony A/c Pvt. Ltd. — New Delhi, India • Aug 2023 – Sep 2024</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
-              <li>Designed and implemented optimized operational systems, cutting process delays and improving workflows.</li>
-              <li>Built durable client relationships to drive retention and sales.</li>
-              <li>Led teams to maintain quality benchmarks and hit performance targets.</li>
-              <li>Streamlined financial processes for accuracy and transparency.</li>
+              <li>Designed and implemented optimized operational systems, significantly reducing process delays and improving workflow efficiency.</li>
+              <li>Managed client relationships, delivering exceptional service that contributed to increased sales and customer retention.</li>
+              <li>Supervised and guided employees to maximize productivity, maintain quality standards, and achieve performance targets.</li>
+              <li>Streamlined financial processes, enhancing accuracy, transparency, and cost control across operations.</li>
             </ul>
           </article>
 
@@ -293,10 +317,10 @@
             <h3 class="text-2xl font-semibold">System Administrator</h3>
             <div class="opacity-90">Christ College of Science and Management — Bengaluru, India • 2022 – 2023</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
-              <li>Provided reliable maintenance and troubleshooting for hardware, software, and peripherals.</li>
-              <li>Installed and upgraded operating systems and enterprise apps to boost productivity.</li>
-              <li>Monitored and optimized network performance for consistent service availability.</li>
-              <li>Hardened security via account, permission, and access‑control best practices.</li>
+              <li>Delivered reliable maintenance and troubleshooting for hardware, software, and peripherals, reducing downtime and ensuring seamless operations.</li>
+              <li>Installed, configured, and upgraded hardware, operating systems, and enterprise applications to improve system efficiency and user productivity.</li>
+              <li>Monitored and optimized system and network performance, proactively resolving issues to maintain consistent service availability.</li>
+              <li>Administered user accounts, permissions, and access controls in line with security protocols, strengthening data protection and compliance.</li>
             </ul>
           </article>
 
@@ -305,9 +329,9 @@
             <h3 class="text-2xl font-semibold">Intern</h3>
             <div class="opacity-90">Hailstone Technology — Coimbatore, India • Apr 2022 – May 2022</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
-              <li>Built dynamic, responsive PHP websites and improved UX.</li>
-              <li>Designed and implemented full‑stack apps integrating front‑end interfaces with robust back‑end systems.</li>
-              <li>Maintained server environments for performance, security, and uptime.</li>
+              <li>Developed dynamic and responsive websites using PHP, enhancing functionality and user experience.</li>
+              <li>Designed and implemented full‑stack web applications, integrating front‑end interfaces with robust back‑end systems.</li>
+              <li>Managed and maintained server‑side environments, ensuring optimal performance, security, and uptime.</li>
             </ul>
           </article>
         </div>
@@ -322,72 +346,72 @@
           <!-- Cards (based on CV list) -->
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Speech Emotion Detection using AI</h3>
-            <p class="mt-2 text-sm opacity-90">Models to classify human emotions from speech using ML/DL.</p>
+            <p class="mt-2 text-sm opacity-90">Comparative study implementing and evaluating ML/DL models for classifying human emotions from speech; demonstrates solid audio signal processing and model selection.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">ML/DL</span><span class="chip">Signal Processing</span>
             </div>
             <div class="mt-4 flex gap-3 text-sm">
-              <a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a>
+              <a href="https://github.com/AJT4-de/Speech-Emotion-Detection" target="_blank" class="btn">Source</a>
             </div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Energy Optimisation using AI</h3>
-            <p class="mt-2 text-sm opacity-90">AI‑driven strategies to reduce and balance home energy use.</p>
+            <p class="mt-2 text-sm opacity-90">Data‑driven system that optimizes home energy use with real‑time recommendations aligned to grid pricing and weather to reduce cost and maximize renewables.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">AI</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Energy-Optimisation-using-AI" target="_blank" class="btn">Source</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">YoloEats — AI Food Platform</h3>
-            <p class="mt-2 text-sm opacity-90">Dietary insights and allergy detection for safer choices.</p>
+            <p class="mt-2 text-sm opacity-90">Full‑stack mobile platform delivering personalized dietary insights, allergy alerts, and product recommendations via AI‑powered scanning and analysis.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Cross‑platform</span><span class="chip">AI</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/YoloEats" target="_blank" class="btn">Source</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">2D Adventure Game</h3>
-            <p class="mt-2 text-sm opacity-90">Created with the Godot Engine; optimized gameplay and visuals.</p>
+            <p class="mt-2 text-sm opacity-90">Engaging 2D sidescroller inspired by Naruto, built in Godot with a focus on polished gameplay, visuals, and performance.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Godot</span><span class="chip">Game Dev</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Cursed-Eye---Legacy-of-Pain-Naruto-" target="_blank" class="btn">Source</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Chatter Haus — Performance Analysis</h3>
-            <p class="mt-2 text-sm opacity-90">Rust + Kubernetes chat app to compare GAE vs GKE under load; benchmarking with Artillery.io.</p>
+            <p class="mt-2 text-sm opacity-90">Chat app to benchmark Google App Engine vs Google Kubernetes Engine under load; Rust backend with Axiom, Vite.js frontend, tests via Artillery.io.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Vite.js</span><span class="chip">GKE</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Chat-application-comparing-GAE-and-GKE" target="_blank" class="btn">Source</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">E‑commerce Platform</h3>
-            <p class="mt-2 text-sm opacity-90">Scalable store with Rust backend & Next.js frontend; focused on performance.</p>
+            <p class="mt-2 text-sm opacity-90">Collaborative build using Rust (backend), Next.js (frontend), and Axiom; emphasizes scalability, performance, and a modern UX.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Next.js</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/911-Ecommerce-platform" target="_blank" class="btn">Source</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Polyglot — Language‑translation Chat</h3>
-            <p class="mt-2 text-sm opacity-90">Real‑time multilingual chat powered by an open‑source translation model.</p>
+            <p class="mt-2 text-sm opacity-90">Real‑time multilingual chat using an open‑source translation model in Python; enables seamless cross‑language communication with a simple interface.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">NLP</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Polyglot" target="_blank" class="btn">Source</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">Login — Techfest Website</h3>
-            <p class="mt-2 text-sm opacity-90">Website for the college tech event; promotion, registration, FAQs.</p>
+            <p class="mt-2 text-sm opacity-90">Event website for the college tech fest; supports promotion, participant registration, FAQ, and event updates using HTML and JavaScript.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">HTML</span><span class="chip">JavaScript</span>
             </div>
@@ -396,11 +420,11 @@
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
             <h3 class="font-semibold text-lg">MapGo — Delivery & Tracking</h3>
-            <p class="mt-2 text-sm opacity-90">End‑to‑end package tracking with open‑source maps and chat support.</p>
+            <p class="mt-2 text-sm opacity-90">End‑to‑end package delivery and tracking app with real‑time updates and chat among client, seller, and delivery partner using open‑source maps.</p>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Web</span><span class="chip">Maps API</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/MAPGo" target="_blank" class="btn">Source</a></div>
           </div></div>
         </div>
       </div>
@@ -426,13 +450,19 @@
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Tools & Platforms</h3>
             <div class="mt-2 flex flex-wrap gap-2 text-sm">
-              <span class="chip">Docker</span><span class="chip">Kubernetes</span><span class="chip">Networking</span><span class="chip">Security</span><span class="chip">Troubleshooting</span><span class="chip">Performance Tuning</span>
+              <span class="chip">Docker</span><span class="chip">Kubernetes</span><span class="chip">Microservices</span><span class="chip">Cloud Platforms</span>
+            </div>
+          </div></div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
+            <h3 class="font-semibold">System Administration</h3>
+            <div class="mt-2 flex flex-wrap gap-2 text-sm">
+              <span class="chip">Linux</span><span class="chip">Windows Server</span><span class="chip">Networking</span><span class="chip">Security</span><span class="chip">Troubleshooting</span><span class="chip">Performance Tuning</span>
             </div>
           </div></div>
           <div class="p-5 rounded-2xl bg-white/5 border border-white/10 reveal tilt"><div class="tilt-inner">
             <h3 class="font-semibold">Design</h3>
             <div class="mt-2 flex flex-wrap gap-2 text-sm">
-              <span class="chip">Photoshop</span><span class="chip">Illustrator</span>
+              <span class="chip">Photoshop</span><span class="chip">Illustrator</span><span class="chip">InDesign</span><span class="chip">Lightroom</span>
             </div>
           </div></div>
         </div>
@@ -451,21 +481,10 @@
           <div class="reveal">
             <div class="font-semibold">Bachelor’s in Computer Application</div>
             <div class="opacity-80">Christ College of Science and Management • 2019 – 2022 • Malur, India</div>
-            <ul class="mt-2 list-disc list-inside text-[0.95rem] opacity-95 space-y-1">
-              <li>Organizer & Chief Student Coordinator for Login ’22 (inter‑collegiate tech fest).</li>
-              <li>Captained the college basketball team.</li>
-              <li>Co‑founded a college band “CADENCE” and served as an initial member.</li>
-              <li>Student representative for 3 consecutive years.</li>
-            </ul>
           </div>
           <div class="reveal">
             <div class="font-semibold">XII (Higher Secondary)</div>
             <div class="opacity-80">St. Columba’s School • 2019 • New Delhi, India</div>
-            <ul class="mt-2 list-disc list-inside text-[0.95rem] opacity-95 space-y-1">
-              <li>Member of the Just ED Society (Centre for Social Service).</li>
-              <li>Defender & Mid‑fielder in the school football team.</li>
-              <li>Received the Chatterjee Award for highest score in Informatics Practices.</li>
-            </ul>
           </div>
           <div class="reveal">
             <div class="font-semibold">X (Secondary)</div>
@@ -627,9 +646,18 @@
           } else {
             document.body.setAttribute('data-theme','light');
           }
-          // Hide brand text only on the first section (hero)
+          // Brand text: show 'portfolio' on hero only; name otherwise
           const brandText = document.getElementById('brandText');
-          if(brandText){ brandText.style.visibility = (id === 'hero') ? 'hidden' : 'visible'; }
+          if(brandText){ brandText.textContent = (id === 'hero') ? 'portfolio' : 'Aldrin\u00A0J\u00A0Thomas'; }
+          // FAB visible from section 2 onward
+          const idx = panels.indexOf(el);
+          document.body.setAttribute('data-show-fab', idx >= 1 ? 'true' : 'false');
+          // Mobile swipe hint only on hero
+          const swipeHint = document.getElementById('swipeHint');
+          if(swipeHint){ swipeHint.style.display = (id === 'hero') ? 'flex' : 'none'; }
+          // Desktop nudge for next button only on hero
+          const nextBtn = document.getElementById('nextBtn');
+          nextBtn?.classList.toggle('hero-nudge', id === 'hero');
         }
       });
     }, { root: scrollEl, threshold: [0.65] });
@@ -640,7 +668,15 @@
     if(firstActive){
       document.body.setAttribute('data-theme', firstActive.classList.contains('theme-dark') ? 'dark' : 'light');
       const brandText = document.getElementById('brandText');
-      if(brandText){ brandText.style.visibility = (firstActive.id === 'hero') ? 'hidden' : 'visible'; }
+      if(brandText){ brandText.textContent = (firstActive.id === 'hero') ? 'portfolio' : 'Aldrin\u00A0J\u00A0Thomas'; }
+      // FAB visibility
+      const idx = panels.indexOf(firstActive);
+      document.body.setAttribute('data-show-fab', idx >= 1 ? 'true' : 'false');
+      // Swipe hint and desktop nudge
+      const swipeHint = document.getElementById('swipeHint');
+      if(swipeHint){ swipeHint.style.display = (firstActive.id === 'hero') ? 'flex' : 'none'; }
+      const nextBtnInit = document.getElementById('nextBtn');
+      nextBtnInit?.classList.toggle('hero-nudge', firstActive.id === 'hero');
     }
 
     // Nav clicks → horizontal snap to panel
