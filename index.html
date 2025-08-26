@@ -62,6 +62,13 @@
       filter: none;
     }
 
+    /* Mobile: relax snap to reduce jerkiness, let native momentum lead */
+    @media (max-width: 1023px){
+  .hscroll{ scroll-snap-type: x proximity; }
+  .panel{ scroll-snap-stop: normal; transition: opacity .3s ease !important; transform: none !important; filter: none !important; opacity: .98; }
+  .panel.is-active{ opacity: 1; }
+    }
+
     /* ---------- PROGRESS BAR (top) ---------- */
     #progressBar { position: fixed; left: 0; top: 0; height: 6px; width: 0%; background: var(--teal); z-index: 100; }
 
@@ -678,11 +685,14 @@
     let isDown = false, isDragging = false, startX = 0, startLeft = 0, activePointer = null;
     const DRAG_THRESHOLD = 6; // pixels
     scrollEl.addEventListener('pointerdown', (e)=>{
+      // On touch, use native scroll entirely to avoid fighting momentum
+      if(e.pointerType === 'touch') return;
       // Skip drag when interacting with inputs/links/buttons
       if(e.target.closest('a, button, [role="button"], input, textarea, select, summary')) return;
       isDown = true; isDragging = false; activePointer = e.pointerId; startX = e.clientX; startLeft = scrollEl.scrollLeft; scrollEl.setPointerCapture(activePointer);
     });
     scrollEl.addEventListener('pointermove', (e)=>{
+      if(e.pointerType === 'touch') return;
       if(!isDown) return;
       const dx = e.clientX - startX;
       if(!isDragging){ if(Math.abs(dx) < DRAG_THRESHOLD) return; isDragging = true; }
