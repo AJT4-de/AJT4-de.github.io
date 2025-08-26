@@ -62,10 +62,10 @@
       filter: none;
     }
 
-    /* Mobile: relax snap to reduce jerkiness, let native momentum lead */
+    /* Mobile: strict snap so each swipe lands on a section; keep visuals simple to avoid jank */
     @media (max-width: 1023px){
-  .hscroll{ scroll-snap-type: x proximity; }
-  .panel{ scroll-snap-stop: normal; transition: opacity .3s ease !important; transform: none !important; filter: none !important; opacity: .98; }
+      .hscroll{ scroll-snap-type: x mandatory; }
+      .panel{ scroll-snap-stop: always; transition: opacity .3s ease !important; transform: none !important; filter: none !important; opacity: .98; }
   .panel.is-active{ opacity: 1; }
     }
 
