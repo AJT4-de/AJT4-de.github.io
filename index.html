@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Aldrin J Thomas • Portfolio</title>
+  <!-- Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="Favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="Favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="Favicon/favicon-16x16.png" />
+  <link rel="icon" type="image/x-icon" href="Favicon/favicon.ico" />
+  <link rel="manifest" href="Favicon/site.webmanifest" />
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Fonts: Josefin Sans (regular), Federant (headings/highlights), Montserrat (UI/others) -->
@@ -102,6 +108,8 @@
 
     /* Cursor ring (pointer: fine only) */
     @media (pointer:fine){
+      /* Ensure native cursor never shows on interactive elements when custom cursor is active */
+      html.cursor-none, html.cursor-none *{ cursor: none !important; }
       body{ cursor: none; }
       #cursorRing{ position: fixed; left:0; top:0; width: 32px; height: 32px; border: 2px solid var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: left, top, width, height, border-color; transition: width .12s ease, height .12s ease, opacity .12s ease; }
       #cursorDot{ position: fixed; left:0; top:0; width: 8px; height: 8px; background: var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: left, top, background-color; transition: opacity .12s ease; }
@@ -150,8 +158,10 @@
   @keyframes nudgeRight { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(6px); } }
   #nextBtn.hero-nudge{ animation: nudgeRight 1.8s ease-in-out infinite; }
 
-    /* Contact panel should be vertically centered */
+  /* Contact panel should be vertically centered */
     #contact.panel{ display:flex; align-items:center; justify-content:center; }
+  /* About panel centered */
+  #about.panel{ display:flex; align-items:center; }
 
     /* Mobile menu */
     #mobileMenu{ display:none; }
@@ -167,6 +177,15 @@
       .panel{ transition: none !important; }
       .reveal{ transition: none !important; }
     }
+
+  /* Timeline styles for Experience & Education */
+  .timeline{ position: relative; }
+  .timeline .tli{ position: relative; padding-left: 1rem; margin-left: .5rem; border-left: 2px dashed; }
+  .timeline .tli::before{ content:""; position:absolute; left:-7px; top:.6rem; width:10px; height:10px; border-radius:999px; background: var(--teal); box-shadow: 0 0 0 3px rgba(0,70,67,.15); }
+  .timeline .tli + .tli{ margin-top: 1.25rem; }
+  .panel.theme-light .timeline .tli{ border-left-color: rgba(12,22,24,.22); }
+  .panel.theme-dark .timeline .tli{ border-left-color: rgba(255,255,255,.28); }
+  .panel.theme-dark .timeline .tli::before{ box-shadow: 0 0 0 3px rgba(255,255,255,.18); }
   </style>
 </head>
 <body>
@@ -249,18 +268,18 @@
         <p class="text-lg md:text-2xl opacity-90 reveal">• AI Enthusiast • System Administrator • Web Developer •</p>
         <p class="mt-5 opacity-95 leading-relaxed reveal">I design reliable systems, build clean web apps, and explore practical AI—turning ideas into efficient, secure solutions that scale.</p>
         <div class="mt-8 flex items-center justify-center gap-4 reveal">
-          <a href="https://github.com/AJT4-de" target="_blank" class="btn teal" aria-label="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
+          <a href="https://github.com/AJT4-de" style="border-radius: 100px;" target="_blank" class="btn teal" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24"  fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.86 2.84 1.32 3.53 1 .11-.79.42-1.32.76-1.62-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 12 .5Z"/></svg>
             GitHub
           </a>
           <!-- Email single toggle button -->
           <div class="relative inline-block">
-            <button id="emailButton" class="btn teal" aria-haspopup="menu" aria-expanded="false" title="Email options">
+            <button id="emailButton" style="border-radius: 100px;" class="btn teal" aria-haspopup="menu" aria-expanded="false" title="Email options" >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
               <span class="ml-1">Email</span>
               <svg width="14" height="14" class="ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div id="emailMenu"  style="color: var(--ink)" class="absolute right-0 top-full mt-2 hidden w-72 rounded-xl border bg-white shadow-xl z-10">
+            <div id="emailMenu" style="color: var(--ink);" class="absolute right-0 top-full mt-2 hidden w-72 rounded-xl border bg-white shadow-xl z-10">
               <button data-mail="mailto:aldrinjt@outlook.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0, 70, 67, 0.58)]">Send via Outlook — <span class="font-medium">aldrinjt@outlook.com</span></button>
               <button data-mail="mailto:aldrinjthomas4@gmail.com" class="w-full text-left px-3 py-2 hover:bg-[rgba(0, 70, 67, 0.58)]">Send via Gmail — <span class="font-medium">aldrinjthomas4@gmail.com</span></button>
               <div class="border-t"></div>
@@ -287,9 +306,9 @@
   <section id="experience" class="panel theme-dark bg-[var(--teal)] text-[var(--paper)]">
       <div class="max-w-5xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold mb-6 reveal">Experience</h2>
-        <div class="space-y-8">
+        <div class="timeline space-y-8">
           <!-- Divine Retreat Ashram -->
-          <article class="reveal">
+          <article class="reveal tli">
             <h3 class="text-2xl font-semibold">System Administrator & Technician</h3>
             <div class="opacity-90">Divine Retreat Ashram — Faridabad, India • Jul 2023 – Sep 2024</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
@@ -301,7 +320,7 @@
           </article>
 
           <!-- Sony A/c Pvt. Ltd. -->
-          <article class="reveal">
+          <article class="reveal tli">
             <h3 class="text-2xl font-semibold">Manager</h3>
             <div class="opacity-90">Sony A/c Pvt. Ltd. — New Delhi, India • Aug 2023 – Sep 2024</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
@@ -313,7 +332,7 @@
           </article>
 
           <!-- Christ College -->
-          <article class="reveal">
+          <article class="reveal tli">
             <h3 class="text-2xl font-semibold">System Administrator</h3>
             <div class="opacity-90">Christ College of Science and Management — Bengaluru, India • 2022 – 2023</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
@@ -325,7 +344,7 @@
           </article>
 
           <!-- Hailstone Technology -->
-          <article class="reveal">
+          <article class="reveal tli">
             <h3 class="text-2xl font-semibold">Intern</h3>
             <div class="opacity-90">Hailstone Technology — Coimbatore, India • Apr 2022 – May 2022</div>
             <ul class="mt-3 list-disc list-inside space-y-1.5">
@@ -351,7 +370,7 @@
               <span class="chip">Python</span><span class="chip">ML/DL</span><span class="chip">Signal Processing</span>
             </div>
             <div class="mt-4 flex gap-3 text-sm">
-              <a href="https://github.com/AJT4-de/Speech-Emotion-Detection" target="_blank" class="btn">Source</a>
+              <a href="https://github.com/AJT4-de/Speech-Emotion-Detection" target="_blank" class="btn">_Source_</a>
             </div>
           </div></div>
 
@@ -361,7 +380,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">AI</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Energy-Optimisation-using-AI" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Energy-Optimisation-using-AI" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -370,7 +389,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Cross‑platform</span><span class="chip">AI</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/YoloEats" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/YoloEats" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -379,7 +398,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Godot</span><span class="chip">Game Dev</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Cursed-Eye---Legacy-of-Pain-Naruto-" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Cursed-Eye---Legacy-of-Pain-Naruto-" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -388,7 +407,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Vite.js</span><span class="chip">GKE</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Chat-application-comparing-GAE-and-GKE" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Chat-application-comparing-GAE-and-GKE" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -397,7 +416,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Rust</span><span class="chip">Next.js</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/911-Ecommerce-platform" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/911-Ecommerce-platform" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -406,7 +425,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Python</span><span class="chip">NLP</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Polyglot" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/Polyglot" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -415,7 +434,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">HTML</span><span class="chip">JavaScript</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de" target="_blank" class="btn">_Source_</a></div>
           </div></div>
 
           <div class="tilt"><div class="tilt-inner p-5 rounded-2xl border bg-white/80 hover:shadow-lg transition reveal">
@@ -424,7 +443,7 @@
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
               <span class="chip">Web</span><span class="chip">Maps API</span>
             </div>
-            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/MAPGo" target="_blank" class="btn">Source</a></div>
+            <div class="mt-4 flex gap-3 text-sm"><a href="https://github.com/AJT4-de/MAPGo" target="_blank" class="btn">_Source_</a></div>
           </div></div>
         </div>
       </div>
@@ -473,20 +492,20 @@
   <section id="education" class="panel theme-light bg-[var(--paper)] text-[var(--ink)]">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[var(--teal)] mb-6 reveal">Education</h2>
-        <div class="space-y-6">
-          <div class="reveal">
+        <div class="timeline space-y-6">
+          <div class="reveal tli">
             <div class="font-semibold">Masters in Applied Computer Sciences</div>
             <div class="opacity-80">SRH Hochschule Heidelberg • Oct 2024 – Present • Heidelberg, Germany</div>
           </div>
-          <div class="reveal">
+          <div class="reveal tli">
             <div class="font-semibold">Bachelor’s in Computer Application</div>
-            <div class="opacity-80">Christ College of Science and Management • 2019 – 2022 • Karnataka, India</div>
+            <div class="opacity-80">Christ College of Science and Management • 2019 – 2022 • Malur, India</div>
           </div>
-          <div class="reveal">
+          <div class="reveal tli">
             <div class="font-semibold">XII (Higher Secondary)</div>
             <div class="opacity-80">St. Columba’s School • 2019 • New Delhi, India</div>
           </div>
-          <div class="reveal">
+          <div class="reveal tli">
             <div class="font-semibold">X (Secondary)</div>
             <div class="opacity-80">St. Columba’s School • 2017 • New Delhi, India</div>
           </div>
@@ -579,13 +598,21 @@
       requestTo(scrollEl.scrollLeft + horiz);
     }, { passive: false });
 
-    // Drag-to-scroll
-    let isDown = false, startX = 0, startLeft = 0, activePointer = null;
+    // Drag-to-scroll (with threshold and interactive skip)
+    let isDown = false, isDragging = false, startX = 0, startLeft = 0, activePointer = null;
+    const DRAG_THRESHOLD = 6; // pixels
     scrollEl.addEventListener('pointerdown', (e)=>{
-      isDown = true; activePointer = e.pointerId; startX = e.clientX; startLeft = scrollEl.scrollLeft; scrollEl.setPointerCapture(activePointer);
+      // Skip drag when interacting with inputs/links/buttons
+      if(e.target.closest('a, button, [role="button"], input, textarea, select, summary')) return;
+      isDown = true; isDragging = false; activePointer = e.pointerId; startX = e.clientX; startLeft = scrollEl.scrollLeft; scrollEl.setPointerCapture(activePointer);
     });
-    scrollEl.addEventListener('pointermove', (e)=>{ if(!isDown) return; const dx = e.clientX - startX; requestTo(startLeft - dx); });
-    const release = ()=>{ isDown = false; if(activePointer!=null){ try{ scrollEl.releasePointerCapture(activePointer);}catch(_){} activePointer=null; } };
+    scrollEl.addEventListener('pointermove', (e)=>{
+      if(!isDown) return;
+      const dx = e.clientX - startX;
+      if(!isDragging){ if(Math.abs(dx) < DRAG_THRESHOLD) return; isDragging = true; }
+      requestTo(startLeft - dx);
+    });
+    const release = ()=>{ isDown = false; isDragging = false; if(activePointer!=null){ try{ scrollEl.releasePointerCapture(activePointer);}catch(_){} activePointer=null; } };
     scrollEl.addEventListener('pointerup', release);
     scrollEl.addEventListener('pointercancel', release);
 
@@ -757,16 +784,18 @@
 
     // Custom cursor: centered ring + dot, dynamic contrast, and button magnifier
     (function(){
-      const ring = document.getElementById('cursorRing');
+  const ring = document.getElementById('cursorRing');
       const dot  = document.getElementById('cursorDot');
       const lens = document.getElementById('cursorLens');
-      if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) { ring.style.display='none'; dot.style.display='none'; return; }
+  if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) { ring.style.display='none'; dot.style.display='none'; return; }
+  // Force-hide native cursor across the document to prevent flicker on links/buttons
+  document.documentElement.classList.add('cursor-none');
 
       // Position targets and lerp state
       let tx = window.innerWidth/2, ty = window.innerHeight/2; // target
       let x = tx, y = ty;                                      // current
-  const followEase = 1;                                    // instant follow (no delay)
-  const dotEase = 1;                                       // instant dot
+  const followEase = 0.18;                                 // smooth delay for ring
+  const dotEase = 1;                                       // dot stays instant
 
       // Helpers: color parsing and luminance
       function parseRGBA(str){
@@ -806,8 +835,10 @@
       }
 
       function animateCursor(){
-        // No delay: ring and dot both at target
-        x = tx; y = ty; dot._x = tx; dot._y = ty;
+        // Ring lags smoothly; dot is instant
+        x += (tx - x) * followEase;
+        y += (ty - y) * followEase;
+        dot._x = tx; dot._y = ty;
         applyCursorStyle(x, y);
         requestAnimationFrame(animateCursor);
       }
