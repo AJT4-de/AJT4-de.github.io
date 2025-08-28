@@ -4,6 +4,26 @@
   const progressBar = document.getElementById('progressBar');
   const yearEl = document.getElementById('year');
   const brandLink = document.getElementById('brandLink');
+  // Hide loader when ready
+  (function(){
+    const loader = document.getElementById('appLoader');
+    const root = document.documentElement;
+    function hide(){
+      if(loader && !loader.classList.contains('hide')){
+        loader.classList.add('hide');
+        root.classList.remove('is-loading');
+        // safety remove node after transition
+        setTimeout(()=> loader.remove(), 800);
+      } else {
+        root.classList.remove('is-loading');
+      }
+    }
+    // Fallback in case load event is delayed
+    const fallback = setTimeout(hide, 4000);
+    window.addEventListener('load', ()=>{ clearTimeout(fallback); hide(); });
+    // If DOM is already interactive and images are small, hide sooner after first frame
+    if(document.readyState === 'complete') { clearTimeout(fallback); requestAnimationFrame(hide); }
+  })();
   if(yearEl) yearEl.textContent = new Date().getFullYear();
 
   // ---------- LIGHTWEIGHT HORIZONTAL SMOOTHING (wheel → horizontal) ----------

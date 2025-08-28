@@ -232,3 +232,16 @@ footer{ position: fixed; bottom: 0; left: 0; right: 0; }
   .panel{ scroll-snap-stop: always; transition: opacity .3s ease !important; transform: none !important; filter: none !important; opacity: .98; }
   .panel.is-active{ opacity: 1; }
 }
+
+/* ---------- APP LOADER (AJT) ---------- */
+html.is-loading body { overflow: hidden; }
+html.is-loading #cursorRing,
+html.is-loading #cursorDot,
+html.is-loading #cursorLens{ display: none !important; }
+.app-loader{ position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: var(--ink); color: var(--paper); transition: opacity .5s ease, visibility .5s ease; }
+.app-loader .loader-inner{ display: flex; flex-direction: column; align-items: center; gap: 16px; transform: translateZ(0); will-change: transform, opacity; }
+.app-loader .logo{ font-family: "Federant", serif; letter-spacing: 0.06em; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,.25); font-size: clamp(40px, 9vw, 96px); line-height: 1; }
+.app-loader .ring{ width: 64px; height: 64px; border-radius: 999px; border: 3px solid transparent; border-top-color: var(--teal); border-right-color: var(--teal); animation: spin 1s linear infinite; opacity: .9; }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+.app-loader.hide{ opacity: 0; visibility: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: reduce){ .app-loader .ring{ animation: none; } }

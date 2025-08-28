@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="is-loading">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,6 +18,14 @@
   <link href="assets/styles.css" rel="stylesheet" />
 </head>
 <body>
+  <!-- App Loader -->
+  <div id="appLoader" class="app-loader" role="status" aria-live="polite" aria-label="Loading">
+    <div class="loader-inner">
+      <div class="logo">AJT</div>
+      <div class="ring" aria-hidden="true"></div>
+    </div>
+  </div>
+
   <!-- Cursor ring elements (only visible on pointer:fine via CSS) -->
   <div id="cursorRing" aria-hidden="true"></div>
   <div id="cursorDot" aria-hidden="true"></div>
