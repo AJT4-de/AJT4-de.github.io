@@ -1,0 +1,234 @@
+/* Extracted styles from inline <style> in index.html */
+:root{
+  /* Palette from coolors: https://coolors.co/palette/0c1618-004643-faf4d3 */
+  --ink:#0c1618;         /* very dark blue-green */
+  --teal:#004643;        /* deep teal (accent) */
+  --paper:#faf4d3;       /* parchment */
+}
+html, body { height:100%; }
+body { font-family: "Josefin Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--paper); color: var(--ink); overflow: hidden; }
+
+/* Headings and highlighted text use Federant */
+h1, h2, h3, .nav-link, strong, .font-extrabold { font-family: "Federant", serif; }
+/* UI elements (buttons, chips, small labels) use Montserrat */
+.btn, .chip, .underline, .opacity-80, .opacity-85, .opacity-90, .opacity-95 { font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+/* ---------- HORIZONTAL SCROLLER LAYOUT (no side glow) ---------- */
+.hscroll {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;              /* native horizontal */
+  overflow-y: hidden;
+  height: 100vh;                 /* full viewport height */
+  scroll-snap-type: x mandatory; /* firm snapping for stability */
+  scroll-behavior: smooth;       /* smooth programmatic */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;           /* keep horizontal gestures smooth on container */
+  overscroll-behavior-x: contain;
+}
+.panel {                         /* each full-width panel */
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow-y: auto;              /* vertical scroll INSIDE panels when needed */
+  padding: 6rem 1.25rem 5.5rem;  /* account for fixed header + fixed footer */
+  position: relative;
+  transition: opacity .5s ease, transform .5s ease, filter .5s ease;
+  opacity: .75;
+  transform: scale(.985);
+  filter: saturate(.95);
+  will-change: transform, opacity, filter;
+}
+.panel.is-active {
+  opacity: 1;
+  transform: scale(1);
+  filter: none;
+}
+
+/* ---------- PROGRESS BAR (top) ---------- */
+#progressBar { position: fixed; left: 0; top: 0; height: 6px; width: 0%; background: var(--teal); z-index: 100; }
+
+/* ---------- NAV ---------- */
+.glass { backdrop-filter: saturate(110%) blur(8px); background: rgba(250,244,211,.82); }
+.nav-link { position: relative; }
+.nav-link::after{ content: ""; position:absolute; left:0; right:0; bottom:-6px; height:2px; background: var(--teal); transform:scaleX(0); transform-origin:left; transition: transform .25s ease; }
+.nav-link:hover::after, .nav-link[aria-current="true"]::after{ transform:scaleX(1); }
+
+/* Hero-only transparent navbar and adjusted colors */
+body[data-hero="true"] header.glass{ background: transparent !important; backdrop-filter: none !important; box-shadow: none !important; border-bottom-color: transparent !important; }
+body[data-hero="true"] header .nav-link{ color: rgba(250,250,250,.95); }
+body[data-hero="true"] header .nav-link::after{ background: rgba(250,250,250,.9); }
+body[data-hero="true"] #brandLink{ color: rgba(250,250,250,.96); }
+body[data-hero="true"] #brandLink > span:first-child{ background: rgba(250,250,250,.92) !important; }
+/* Keep mobile menu readable over hero */
+body[data-hero="true"] #mobileMenu{ background: rgba(0,0,0,.55); backdrop-filter: blur(8px); }
+body[data-hero="true"] #mobileMenu a{ color: rgba(250,250,250,.96); }
+
+/* ---------- SMALL UTIL ---------- */
+.btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem .9rem; border-radius:.75rem; border:1px solid rgba(12,22,24,.15); transition:transform .15s ease, box-shadow .2s ease, background .2s ease; position: relative; overflow: hidden; }
+.btn{ --btnscale: 1; --btnrx: 0deg; --btnry: 0deg; transform: scale(var(--btnscale)) rotateX(var(--btnrx)) rotateY(var(--btnry)); transform-style: preserve-3d; }
+.btn:hover{ box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+.btn.teal{ background: var(--teal); color: var(--paper); border-color: transparent; }
+.chip{ display:inline-flex; align-items:center; gap:.375rem; padding:.35rem .6rem; border-radius:999px; border:1px dashed rgba(12,22,24,.25); font-size:.85rem; }
+
+/* Lens effect for buttons (shown while hovering) */
+.btn::before{ content:""; position:absolute; width: 180px; height: 180px; left: calc(var(--mx, -999px) - 90px); top: calc(var(--my, -999px) - 90px); border-radius: 999px; pointer-events:none; opacity:0; transition: opacity .15s ease; box-shadow: 0 6px 18px rgba(0,0,0,.15) inset, 0 2px 10px rgba(0,0,0,.08); background: radial-gradient( circle at 50% 50%, rgba(255,255,255,.35), rgba(255,255,255,.12) 60%, rgba(255,255,255,0) 75% ); mix-blend-mode: screen; }
+.btn[data-lens="on"]{ --btnscale: 1.08; transform-origin: var(--mx) var(--my); }
+.btn[data-lens="on"]::before{ opacity: 1; }
+
+/* Button discoverability: subtle periodic shimmer and pulse when visible */
+.btn::after{ content:""; position:absolute; inset:0; background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.25) 12%, transparent 24%); transform: translateX(-120%); opacity:.0; pointer-events:none; }
+.btn[data-animate="on"]::after{ animation: shimmer 2.4s linear infinite; opacity:.35; }
+.btn[data-animate="on"]{ animation: btnBeacon 6s ease-in-out infinite; }
+@keyframes shimmer{ 0%{ transform: translateX(-120%);} 100%{ transform: translateX(120%);} }
+@keyframes btnBeacon{ 0%,100%{ box-shadow: 0 0 0 0 rgba(0,0,0,.0);} 50%{ box-shadow: 0 0 0 8px rgba(0,0,0,.05);} }
+
+/* Hover bounce for buttons (applied via JS outside contact) */
+@keyframes btnHover{ 0%{ transform: scale(1); } 60%{ transform: scale(1.08);} 100%{ transform: scale(1.06);} }
+.btn.btn-bounce{ animation: btnHover .28s ease-out; }
+
+/* Reveal-on-scroll */
+.reveal{ opacity: 0; transform: translateY(8px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.show{ opacity: 1; transform: none; }
+
+/* 3D Tilt cards (subtle) */
+.tilt{ perspective: 900px; }
+.tilt-inner{ transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .08s ease; transform-style: preserve-3d; }
+
+/* Parallax dots in hero */
+.parallax-layer{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.p-dot{ position:absolute; width:6px; height:6px; border-radius:999px; background: rgba(255,255,255,.25); box-shadow: 0 0 10px rgba(255,255,255,.15); }
+
+/* Extra 3D + animation primitives */
+@keyframes bob{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
+@keyframes bobAlt{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(6px);} }
+@keyframes rotateCube{ 0%{ transform: rotateX(0deg) rotateY(0deg);} 100%{ transform: rotateX(360deg) rotateY(360deg);} }
+@keyframes glowPulseLight{ 0%,100%{ box-shadow: 0 0 0 3px rgba(255,255,255,.15);} 50%{ box-shadow: 0 0 0 7px rgba(255,255,255,.08);} }
+@keyframes glowPulseDark{ 0%,100%{ box-shadow: 0 0 0 3px rgba(12,22,24,.16);} 50%{ box-shadow: 0 0 0 7px rgba(12,22,24,.08);} }
+
+/* Hero rotating cube (subtle, behind content) */
+.cube-wrap{ position:absolute; left:50%; top:50%; transform: translate(-50%,-50%); width: 160px; height: 160px; perspective: 900px; opacity: .25; filter: blur(.2px); pointer-events: none; }
+.cube{ position:relative; width:100%; height:100%; transform-style: preserve-3d; animation: rotateCube 16s linear infinite; }
+.cube .face{ position:absolute; inset:0; border: 1px solid rgba(255,255,255,.18); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); }
+.cube .front { transform: translateZ(80px); }
+.cube .back  { transform: rotateY(180deg) translateZ(80px); }
+.cube .right { transform: rotateY(90deg) translateZ(80px); }
+.cube .left  { transform: rotateY(-90deg) translateZ(80px); }
+.cube .top   { transform: rotateX(90deg) translateZ(80px); }
+.cube .bottom{ transform: rotateX(-90deg) translateZ(80px); }
+
+/* Card glare for tilt elements */
+.tilt .tilt-inner[data-glare]::after{ content:""; position:absolute; inset:-2px; border-radius: inherit; pointer-events:none; opacity:.0; transition: opacity .2s ease; mix-blend-mode: screen;
+  background: radial-gradient(220px 220px at var(--gx, -999px) var(--gy, -999px), rgba(255,255,255,.18), rgba(255,255,255,.06) 40%, transparent 60%);
+}
+.tilt:hover .tilt-inner[data-glare]::after{ opacity: .9; }
+
+/* Bobbing chips */
+.chip.bobbing{ animation: bob var(--bobDur,4.2s) ease-in-out infinite; }
+.chip.bobbing-alt{ animation: bobAlt var(--bobDur,4.2s) ease-in-out infinite; }
+.chip{ transition: transform .15s ease, box-shadow .2s ease; }
+.chip:hover{ transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.08); }
+
+/* Timeline node pulse */
+.panel.theme-light .timeline .tli::before{ animation: glowPulseDark 3.6s ease-in-out infinite; }
+.panel.theme-dark  .timeline .tli::before{ animation: glowPulseLight 3.6s ease-in-out infinite; }
+
+/* Cursor ring (pointer: fine only) */
+@media (pointer:fine){
+  /* Ensure native cursor never shows on interactive elements when custom cursor is active */
+  html.cursor-none, html.cursor-none *{ cursor: none !important; }
+  body{ cursor: none; }
+  #cursorRing{ position: fixed; left:0; top:0; width: 32px; height: 32px; border: 2px solid var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: left, top, width, height, border-color; transition: width .12s ease, height .12s ease, opacity .12s ease; }
+  #cursorDot{ position: fixed; left:0; top:0; width: 8px; height: 8px; background: var(--teal); border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); opacity: .9; z-index: 200; will-change: left, top, background-color; transition: opacity .12s ease; }
+  /* Pulse on hover (JS toggles .hover-anim except in #contact) */
+  @keyframes ringPulse{ 0%{ transform: translate(-50%,-50%) scale(1);} 60%{ transform: translate(-50%,-50%) scale(1.15);} 100%{ transform: translate(-50%,-50%) scale(1.1);} }
+  #cursorRing.hover-anim{ animation: ringPulse .38s ease-out; box-shadow: 0 0 0 6px rgba(0,0,0,.06); }
+}
+
+/* Global cursor lens for button hover (magnifier) */
+#cursorLens{ position: fixed; left:0; top:0; width: 140px; height: 140px; border-radius: 999px; pointer-events: none; transform: translate(-50%, -50%); z-index: 201; display: none; box-shadow: 0 8px 24px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.25); backdrop-filter: saturate(160%) brightness(1.2) contrast(1.05); }
+body[data-theme="dark"] #cursorLens{ box-shadow: 0 8px 24px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,255,255,.25); backdrop-filter: saturate(180%) brightness(1.3) contrast(1.08); }
+
+/* Theming: make buttons darker on light sections and lighter on dark sections */
+.panel.theme-light .btn{ background: rgba(12,22,24,.06); color: var(--ink); border-color: rgba(12,22,24,.18); }
+.panel.theme-light .btn:hover{ background: rgba(12,22,24,.10); }
+.panel.theme-dark .btn{ background: rgba(255,255,255,.12); color: var(--paper); border-color: rgba(255,255,255,.25); }
+.panel.theme-dark .btn:hover{ background: rgba(255,255,255,.18); }
+
+/* Overlay Prev/Next arrow buttons themed by active panel */
+body[data-theme="light"] #prevBtn,
+body[data-theme="light"] #nextBtn{ background: rgba(12,22,24,.08); color: var(--ink); border: 1px solid rgba(12,22,24,.18); }
+body[data-theme="light"] #prevBtn:hover,
+body[data-theme="light"] #nextBtn:hover{ background: rgba(12,22,24,.12); }
+body[data-theme="dark"] #prevBtn,
+body[data-theme="dark"] #nextBtn{ background: rgba(255,255,255,.14); color: var(--paper); border: 1px solid rgba(255,255,255,.28); }
+body[data-theme="dark"] #prevBtn:hover,
+body[data-theme="dark"] #nextBtn:hover{ background: rgba(255,255,255,.2); }
+
+/* FAB styles (GitHub link) */
+.fab{ position: fixed; right: 18px; bottom: 22px; width: 54px; height: 54px; display:flex; align-items:center; justify-content:center; border-radius: 999px; z-index: 120; border: 1px solid transparent; box-shadow: 0 10px 24px rgba(0,0,0,.18); transition: transform .2s ease, opacity .2s ease, background .2s ease, border-color .2s ease; opacity: 0; transform: scale(.9); pointer-events: none; }
+.fab:hover{ transform: scale(1.05); }
+.fab{ animation: bob 7s ease-in-out infinite; }
+body[data-show-fab="true"] .fab{ opacity: 1; transform: scale(1); pointer-events: auto; }
+body[data-theme="light"] .fab{ background: rgba(12,22,24,.08); color: var(--ink); border-color: rgba(12,22,24,.18); }
+body[data-theme="light"] .fab:hover{ background: rgba(12,22,24,.12); }
+body[data-theme="dark"] .fab{ background: rgba(255,255,255,.14); color: var(--paper); border-color: rgba(255,255,255,.28); }
+body[data-theme="dark"] .fab:hover{ background: rgba(255,255,255,.2); }
+
+/* Swipe hint (mobile only) */
+#swipeHint{ position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: none; align-items:center; gap:.4rem; z-index: 110; padding: .4rem .7rem; border-radius: 999px; font-size: .9rem; border: 1px solid rgba(0,0,0,.12); background: rgba(250,250,250,.85); box-shadow: 0 8px 20px rgba(0,0,0,.12); animation: swipePulse 1.6s ease-in-out infinite; }
+#swipeHint .hint-icon{ animation: hintSlide 1s ease-in-out infinite; }
+@keyframes swipePulse{ 0%,100%{ transform: translateX(-50%) scale(1);} 50%{ transform: translateX(-50%) scale(1.05);} }
+@keyframes hintSlide{ 0%,100%{ opacity:.6; } 50%{ opacity:1; } }
+@media (min-width: 1024px){ #swipeHint{ display:none !important; } }
+
+/* Desktop nudge for Next button when hero is active */
+@keyframes nudgeRight { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(6px); } }
+#nextBtn.hero-nudge{ animation: nudgeRight 1.8s ease-in-out infinite; }
+
+/* Contact panel should be vertically centered */
+#contact.panel{ display:flex; align-items:center; justify-content:center; }
+/* About panel centered */
+#about.panel{ display:flex; align-items:center; }
+
+/* Mobile menu */
+#mobileMenu{ display:none; }
+@media (max-width: 1023px){
+  #mobileMenu[data-open="true"]{ display:block; }
+}
+
+/* Fixed footer so the page never becomes vertically scrollable */
+footer{ position: fixed; bottom: 0; left: 0; right: 0; }
+
+/* Reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  .panel{ transition: none !important; }
+  .reveal{ transition: none !important; }
+  .cube, .chip, .fab, #prevBtn, #nextBtn, .timeline .tli::before{ animation: none !important; }
+  .timeline::before, .panel h2.font-extrabold::after, .fab::before{ animation: none !important; }
+}
+
+/* Timeline styles for Experience & Education */
+.timeline{ position: relative; }
+.timeline .tli{ position: relative; padding-left: 1rem; margin-left: .5rem; border-left: 2px dashed; }
+.timeline .tli::before{ content:""; position:absolute; left:-7px; top:.6rem; width:10px; height:10px; border-radius:999px; background: var(--teal); box-shadow: 0 0 0 3px rgba(0,70,67,.15); }
+.timeline .tli + .tli{ margin-top: 1.25rem; }
+.panel.theme-light .timeline .tli{ border-left-color: rgba(12,22,24,.22); }
+.panel.theme-dark .timeline .tli{ border-left-color: rgba(255,255,255,.28); }
+.panel.theme-dark .timeline .tli::before{ box-shadow: 0 0 0 3px rgba(255,255,255,.18); }
+/* Flowing highlight along timeline */
+.timeline::before{ content:""; position:absolute; left: .5rem; top:0; bottom:0; width:2px; background-size: 100% 200%; filter: blur(.2px); opacity:.6; pointer-events:none; animation: lineFlow 8s ease-in-out infinite; }
+.panel.theme-light .timeline::before{ background-image: linear-gradient(180deg, rgba(12,22,24,0), rgba(12,22,24,.35), rgba(12,22,24,0)); }
+.panel.theme-dark  .timeline::before{ background-image: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0)); }
+@keyframes lineFlow{ 0%{ background-position: 0 0; } 100%{ background-position: 0 200%; } }
+
+/* Button click ripple */
+.btn .ripple{ position:absolute; border-radius:999px; background: currentColor; opacity:.18; transform: scale(0); pointer-events:none; animation: rippleExpand .6s ease-out forwards; mix-blend-mode: multiply; }
+@keyframes rippleExpand{ to{ transform: scale(1); opacity:0; } }
+
+/* Mobile: strict snap; simpler visuals */
+@media (max-width: 1023px){
+  .hscroll{ scroll-snap-type: x mandatory; }
+  .panel{ scroll-snap-stop: always; transition: opacity .3s ease !important; transform: none !important; filter: none !important; opacity: .98; }
+  .panel.is-active{ opacity: 1; }
+}
