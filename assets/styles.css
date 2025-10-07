@@ -8,18 +8,38 @@
 html, body { height:100%; }
 body { font-family: "Josefin Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--paper); color: var(--ink); overflow: hidden; }
 
-/* Load custom Sinistre font (place files in assets/fonts) */
+/* Load custom Sinistre font (variable + fallbacks) */
 @font-face{
   font-family: "Sinistre";
-  src: url("assets/fonts/Sinistre.woff2") format("woff2"),
-       url("assets/fonts/Sinistre.woff") format("woff");
-  font-weight: 400 900;
+  /* paths are relative to this CSS file (assets/styles.css) */
+  src: url("fonts/sinistre-main/fonts/SinistreVF.woff2") format("woff2"),
+       url("fonts/sinistre-main/fonts/Sinistre-Regular.woff2") format("woff2"),
+       url("fonts/sinistre-main/fonts/Sinistre-Regular.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Explicit faces for broader compatibility */
+@font-face{
+  font-family: "Sinistre";
+  src: url("fonts/sinistre-main/fonts/Sinistre-Regular.woff2") format("woff2"),
+       url("fonts/sinistre-main/fonts/Sinistre-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face{
+  font-family: "Sinistre";
+  src: url("fonts/sinistre-main/fonts/Sinistre-Bold.woff2") format("woff2"),
+       url("fonts/sinistre-main/fonts/Sinistre-Bold.woff") format("woff");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 /* Headings and highlighted text use Sinistre (fallback to Federant/serif) */
-h1, h2, h3, .nav-link, strong, .font-extrabold { font-family: "Sinistre", "Federant", serif; }
+h1, h2, h3, .nav-link, strong, .font-extrabold { font-family: "Sinistre", serif; }
 /* UI elements (buttons, chips, small labels) use Montserrat */
 .btn, .chip, .underline, .opacity-80, .opacity-85, .opacity-90, .opacity-95 { font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 
